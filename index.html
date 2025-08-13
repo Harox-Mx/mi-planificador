@@ -1,220 +1,71 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Planificador Semanal</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Tablero Kanban</title>
   <style>
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #f0f2f5;
+      font-family: sans-serif;
+      background: #f4f4f4;
+      margin: 0;
       padding: 20px;
-      max-width: 900px;
-      margin: auto;
     }
-    h1 {
-      text-align: center;
-      color: #333;
+    .board {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
     }
-    .dia {
-      background-color: white;
-      padding: 20px;
-      margin-top: 30px;
-      border-radius: 10px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-    }
-    .dia h2 {
-      margin-top: 0;
-      font-size: 20px;
-      color: #007bff;
-    }
-    .card {
-      background-color: #ffffff;
-      padding: 12px;
-      margin-top: 15px;
+    .column {
+      background: #fff;
+      padding: 10px;
       border-radius: 8px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      width: 300px;
+      min-height: 400px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
-    .card h3 {
-      margin-top: 0;
-      color: #333;
+    .column h2 {
+      text-align: center;
     }
-    input, select, textarea {
-      margin-top: 8px;
-      padding: 8px;
-      width: 100%;
-      border-radius: 4px;
-      border: 1px solid #ccc;
-      box-sizing: border-box;
-    }
-    button {
-      margin-top: 10px;
-      padding: 8px;
-      width: 100%;
-      background-color: #007bff;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #0056b3;
-    }
-    ul {
-      list-style-type: none;
-      padding: 0;
-      margin-top: 10px;
-    }
-    li {
-      background-color: #f8f9fa;
-      padding: 8px;
-      margin-bottom: 5px;
-      border-radius: 4px;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-    .delete-btn {
-      background-color: #dc3545;
-      color: white;
-      border: none;
-      padding: 4px 8px;
-      border-radius: 4px;
-      cursor: pointer;
-      align-self: flex-end;
-    }
-    .delete-btn:hover {
-      background-color: #c82333;
-    }
-    .prioridad {
-      padding: 4px 8px;
-      border-radius: 4px;
-      margin-left: 10px;
-      font-size: 12px;
-      color: white;
-    }
-    .prioridad.alta {
-      background-color: #dc3545;
-    }
-    .prioridad.media {
-      background-color: #ffc107;
-      color: black;
-    }
-    .prioridad.baja {
-      background-color: #28a745;
-    }
-    .subtareas li {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 4px 0;
-    }
-    .input-subtarea {
-      margin-top: 6px;
+    .task {
+      background: #e0e0e0;
+      margin: 10px 0;
+      padding: 10px;
+      border-radius: 6px;
+      cursor: grab;
     }
   </style>
 </head>
 <body>
-  <h1>🗓️ Planificador Semanal</h1>
-
-  <div class="dia" id="lunes">
-    <h2>Lunes</h2>
-
-    <!-- Reuniones -->
-    <div class="card">
-      <h3>🧑‍💼 Reuniones</h3>
-      <input type="text" placeholder="Hora y título" id="reunion-lunes">
-      <button onclick="agregarReunion('lunes')">Agregar reunión</button>
-      <ul id="lista-reuniones-lunes"></ul>
+  <h1 style="text-align:center;">🧠 Tablero de Productividad</h1>
+  <div class="board">
+    <div class="column" ondrop="drop(event)" ondragover="allowDrop(event)">
+      <h2>Por hacer</h2>
+      <div class="task" draggable="true" ondragstart="drag(event)" id="task1">Diseñar UI</div>
+      <div class="task" draggable="true" ondragstart="drag(event)" id="task2">Definir MVP</div>
     </div>
-
-    <!-- Tareas con subtareas -->
-    <div class="card">
-      <h3>✅ Tareas</h3>
-      <input type="text" placeholder="Tarea" id="tarea-lunes">
-      <select id="prioridad-lunes">
-        <option value="Alta">Alta</option>
-        <option value="Media">Media</option>
-        <option value="Baja">Baja</option>
-      </select>
-      <button onclick="agregarTareaConSubtareas('lunes')">Agregar tarea</button>
-      <ul id="lista-tareas-lunes"></ul>
+    <div class="column" ondrop="drop(event)" ondragover="allowDrop(event)">
+      <h2>En progreso</h2>
     </div>
-
-    <!-- Notas -->
-    <div class="card">
-      <h3>📝 Notas</h3>
-      <textarea id="nota-lunes" placeholder="Escribe tus notas..." rows="4"></textarea>
+    <div class="column" ondrop="drop(event)" ondragover="allowDrop(event)">
+      <h2>Hecho</h2>
     </div>
   </div>
 
   <script>
-    function agregarReunion(dia) {
-      const input = document.getElementById(`reunion-${dia}`);
-      const ul = document.getElementById(`lista-reuniones-${dia}`);
-      const texto = input.value.trim();
-      if (texto === "") return;
-
-      const li = document.createElement("li");
-      li.textContent = texto;
-
-      const btn = document.createElement("button");
-      btn.textContent = "Eliminar";
-      btn.className = "delete-btn";
-      btn.onclick = () => li.remove();
-
-      li.appendChild(btn);
-      ul.appendChild(li);
-      input.value = "";
+    function allowDrop(ev) {
+      ev.preventDefault();
     }
 
-    function agregarTareaConSubtareas(dia) {
-      const tareaTexto = document.getElementById(`tarea-${dia}`).value.trim();
-      const prioridad = document.getElementById(`prioridad-${dia}`).value;
-      const ul = document.getElementById(`lista-tareas-${dia}`);
-      if (tareaTexto === "") return;
-
-      const li = document.createElement("li");
-      li.innerHTML = `
-        <div>
-          <strong>${tareaTexto}</strong>
-          <span class="prioridad ${prioridad.toLowerCase()}">${prioridad}</span>
-        </div>
-        <ul class="subtareas"></ul>
-        <input type="text" placeholder="Subtarea..." class="input-subtarea" />
-        <button onclick="agregarSubtarea(this)">+ Subtarea</button>
-      `;
-
-      const btnEliminar = document.createElement("button");
-      btnEliminar.textContent = "Eliminar";
-      btnEliminar.className = "delete-btn";
-      btnEliminar.onclick = () => li.remove();
-      li.appendChild(btnEliminar);
-
-      ul.appendChild(li);
-      document.getElementById(`tarea-${dia}`).value = "";
+    function drag(ev) {
+      ev.dataTransfer.setData("text", ev.target.id);
     }
 
-    function agregarSubtarea(btn) {
-      const li = btn.closest("li");
-      const input = li.querySelector(".input-subtarea");
-      const subtareaTexto = input.value.trim();
-      if (subtareaTexto === "") return;
-
-      const subtareasUl = li.querySelector(".subtareas");
-      const subtareaLi = document.createElement("li");
-      subtareaLi.innerHTML = `
-        <input type="checkbox" />
-        <span>${subtareaTexto}</span>
-      `;
-
-      const btnEliminar = document.createElement("button");
-      btnEliminar.textContent = "Eliminar";
-      btnEliminar.className = "delete-btn";
-      btnEliminar.onclick = () => subtareaLi.remove();
-      subtareaLi.appendChild(btnEliminar);
-
-      subtareasUl.appendChild(subtareaLi);
-      input.value = "";
+    function drop(ev) {
+      ev.preventDefault();
+      const data = ev.dataTransfer.getData("text");
+      const task = document.getElementById(data);
+      ev.target.closest('.column').appendChild(task);
     }
   </script>
 </body>
