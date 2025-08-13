@@ -2,117 +2,179 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Tablero de Tareas</title>
+  <title>Planificador Semanal</title>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
-      background: #f4f6f8;
+      background-color: #f0f2f5;
       padding: 20px;
+      max-width: 900px;
+      margin: auto;
     }
-    .task-card {
-      background: #fff;
-      border-radius: 8px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+    .dia {
+      background-color: white;
       padding: 20px;
-      margin-bottom: 20px;
-      max-width: 600px;
+      margin-top: 30px;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
     }
-    .task-title {
-      font-size: 18px;
-      font-weight: bold;
-      border: none;
-      width: 100%;
-      margin-bottom: 10px;
+    .dia h2 {
+      margin-top: 0;
+      font-size: 20px;
+      color: #007bff;
     }
-    .subtasks {
-      margin-top: 10px;
-    }
-    .subtask {
-      display: flex;
-      align-items: center;
-      margin-bottom: 5px;
-    }
-    .subtask input[type="text"] {
-      flex: 1;
-      margin-left: 8px;
-      padding: 4px;
-    }
-    .controls {
-      display: flex;
-      gap: 10px;
+    .card {
+      background-color: #ffffff;
+      padding: 12px;
       margin-top: 15px;
-      flex-wrap: wrap;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
     }
-    .controls label {
-      font-size: 14px;
+    .card h3 {
+      margin-top: 0;
+      color: #333;
     }
-    .controls input, .controls select {
-      padding: 4px;
+    input, select, textarea {
+      margin-top: 8px;
+      padding: 8px;
+      width: 100%;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
     }
-    .add-subtask-btn {
+    button {
       margin-top: 10px;
-      background: #0078d4;
+      padding: 8px;
+      width: 100%;
+      background-color: #007bff;
       color: white;
       border: none;
-      padding: 6px 12px;
       border-radius: 4px;
       cursor: pointer;
     }
-    .add-subtask-btn:hover {
-      background: #005ea2;
+    button:hover {
+      background-color: #0056b3;
+    }
+    ul {
+      list-style-type: none;
+      padding: 0;
+      margin-top: 10px;
+    }
+    li {
+      background-color: #f8f9fa;
+      padding: 8px;
+      margin-bottom: 5px;
+      border-radius: 4px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .delete-btn {
+      background-color: #dc3545;
+      color: white;
+      border: none;
+      padding: 4px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .delete-btn:hover {
+      background-color: #c82333;
+    }
+    .prioridad {
+      padding: 4px 8px;
+      border-radius: 4px;
+      margin-left: 10px;
+      font-size: 12px;
+      color: white;
+    }
+    .prioridad.alta {
+      background-color: #dc3545;
+    }
+    .prioridad.media {
+      background-color: #ffc107;
+      color: black;
+    }
+    .prioridad.baja {
+      background-color: #28a745;
     }
   </style>
 </head>
 <body>
+  <h1>🗓️ Planificador Semanal</h1>
 
-  <div class="task-card">
-    <input type="text" class="task-title" value="Nombre de la tarea" />
+  <div class="dia" id="lunes">
+    <h2>Lunes</h2>
 
-    <div class="subtasks" id="subtasks">
-      <div class="subtask">
-        <input type="checkbox" />
-        <input type="text" placeholder="Subtarea..." />
-      </div>
+    <!-- Reuniones -->
+    <div class="card">
+      <h3>🧑‍💼 Reuniones</h3>
+      <input type="text" placeholder="Hora y título" id="reunion-lunes">
+      <button onclick="agregarReunion('lunes')">Agregar reunión</button>
+      <ul id="lista-reuniones-lunes"></ul>
     </div>
 
-    <button class="add-subtask-btn" onclick="addSubtask()">+ Agregar subtarea</button>
+    <!-- Tareas -->
+    <div class="card">
+      <h3>✅ Tareas</h3>
+      <input type="text" placeholder="Tarea" id="tarea-lunes">
+      <select id="prioridad-lunes">
+        <option value="Alta">Alta</option>
+        <option value="Media">Media</option>
+        <option value="Baja">Baja</option>
+      </select>
+      <button onclick="agregarTareaConPrioridad('lunes')">Agregar tarea</button>
+      <ul id="lista-tareas-lunes"></ul>
+    </div>
 
-    <div class="controls">
-      <div>
-        <label>Fecha:</label>
-        <input type="date" />
-      </div>
-      <div>
-        <label>Prioridad:</label>
-        <select>
-          <option>Alta</option>
-          <option>Media</option>
-          <option>Baja</option>
-        </select>
-      </div>
-      <div>
-        <label>Responsables:</label>
-        <input type="text" placeholder="Ej. Ana, Luis" />
-      </div>
-      <div>
-        <label>Etiquetas:</label>
-        <input type="text" placeholder="Ej. Diseño, Urgente" />
-      </div>
+    <!-- Notas -->
+    <div class="card">
+      <h3>📝 Notas</h3>
+      <textarea id="nota-lunes" placeholder="Escribe tus notas..." rows="4"></textarea>
     </div>
   </div>
 
   <script>
-    function addSubtask() {
-      const subtasks = document.getElementById('subtasks');
-      const newSubtask = document.createElement('div');
-      newSubtask.className = 'subtask';
-      newSubtask.innerHTML = `
-        <input type="checkbox" />
-        <input type="text" placeholder="Subtarea..." />
-      `;
-      subtasks.appendChild(newSubtask);
+    function agregarReunion(dia) {
+      const input = document.getElementById(`reunion-${dia}`);
+      const ul = document.getElementById(`lista-reuniones-${dia}`);
+      const texto = input.value.trim();
+      if (texto === "") return;
+
+      const li = document.createElement("li");
+      li.textContent = texto;
+
+      const btn = document.createElement("button");
+      btn.textContent = "Eliminar";
+      btn.className = "delete-btn";
+      btn.onclick = () => li.remove();
+
+      li.appendChild(btn);
+      ul.appendChild(li);
+      input.value = "";
+    }
+
+    function agregarTareaConPrioridad(dia) {
+      const tarea = document.getElementById(`tarea-${dia}`).value.trim();
+      const prioridad = document.getElementById(`prioridad-${dia}`).value;
+      const ul = document.getElementById(`lista-tareas-${dia}`);
+      if (tarea === "") return;
+
+      const li = document.createElement("li");
+      li.innerHTML = `${tarea} <span class="prioridad ${prioridad.toLowerCase()}">${prioridad}</span>`;
+
+      const btn = document.createElement("button");
+      btn.textContent = "Eliminar";
+      btn.className = "delete-btn";
+      btn.onclick = () => li.remove();
+
+      li.appendChild(btn);
+      ul.appendChild(li);
+      document.getElementById(`tarea-${dia}`).value = "";
     }
   </script>
-
 </body>
 </html>
