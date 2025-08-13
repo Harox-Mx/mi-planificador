@@ -1,23 +1,96 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
+  <meta charset="UTF-8">
   <title>Mi Planificador</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f0f2f5;
+      padding: 40px;
+      max-width: 600px;
+      margin: auto;
+    }
+    h1 {
+      color: #333;
+      text-align: center;
+    }
+    .input-group {
+      display: flex;
+      justify-content: center;
+      margin-top: 20px;
+    }
+    input {
+      padding: 10px;
+      width: 70%;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    button {
+      padding: 10px 16px;
+      margin-left: 10px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    ul {
+      list-style-type: none;
+      padding: 0;
+      margin-top: 30px;
+    }
+    li {
+      background-color: white;
+      padding: 12px;
+      margin-bottom: 10px;
+      border-radius: 6px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .delete-btn {
+      background-color: #dc3545;
+      color: white;
+      border: none;
+      padding: 6px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .delete-btn:hover {
+      background-color: #c82333;
+    }
+  </style>
 </head>
 <body>
-  <h1>Mis Tareas</h1>
-  <input type="text" id="nuevaTarea" placeholder="Escribe tu tarea">
-  <button onclick="agregarTarea()">Agregar</button>
+  <h1>🗓️ Mis Tareas</h1>
+  <div class="input-group">
+    <input type="text" id="nuevaTarea" placeholder="Escribe tu tarea">
+    <button onclick="agregarTarea()">Agregar</button>
+  </div>
   <ul id="listaTareas"></ul>
 
   <script>
     function agregarTarea() {
-      const texto = document.getElementById("nuevaTarea").value;
+      const texto = document.getElementById("nuevaTarea").value.trim();
+      if (texto === "") return;
+
       const li = document.createElement("li");
       li.textContent = texto;
+
+      const btn = document.createElement("button");
+      btn.textContent = "Eliminar";
+      btn.className = "delete-btn";
+      btn.onclick = () => li.remove();
+
+      li.appendChild(btn);
       document.getElementById("listaTareas").appendChild(li);
       document.getElementById("nuevaTarea").value = "";
     }
   </script>
 </body>
 </html>
-
