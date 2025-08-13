@@ -1,735 +1,825 @@
+¡Claro que sí! Con gusto te ayudo a mejorar el diseño de tu tablero de productividad. Tomando como referencia a Asana, Trello y Notion, he optimizado el código para que tenga una estética más moderna, amigable y coherente, mejorando los colores, la tipografía y la disposición de los elementos.
+
+Aquí tienes el código HTML y CSS con las mejoras implementadas.
+
+Mejoras clave en el diseño
+Paleta de colores: Se ha elegido una paleta de colores más suave y profesional, similar a las aplicaciones que mencionas. Los colores de fondo (--background-color), las tarjetas (--card-bg-color) y los textos (--text-color, --text-muted-color) ahora tienen un contraste más agradable y reducen la fatiga visual.
+
+Tipografía: He agregado la fuente Inter (si está disponible en el sistema) para un aspecto más limpio y moderno, que se alinea con la estética de las aplicaciones de productividad actuales.
+
+Contenedores y bordes: Se han ajustado los box-shadow y border-radius para que los elementos floten sutilmente sobre el fondo, dándoles una sensación de profundidad y haciendo el diseño más visualmente atractivo.
+
+Botones: Los botones ahora tienen un aspecto más definido con border-radius más pronunciados, box-shadow ligeros y transiciones suaves al pasar el cursor por encima (:hover), lo que mejora la experiencia de usuario.
+
+Diseño responsivo: Se ha incluido una media query para adaptar el diseño a pantallas más pequeñas, haciendo el tablero de Kanban (.board-view) más utilizable en dispositivos móviles al permitir que las columnas se apilen verticalmente.
+
+Consistencia: Se ha reorganizado y limpiado el CSS para usar variables (:root) de manera más eficiente, facilitando la personalización futura y asegurando una apariencia uniforme en todo el proyecto.
+
+Código HTML y CSS mejorado
+Copia y pega este código para ver el diseño actualizado.
+
+HTML
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Tablero de Productividad Avanzado</title>
-  <style>
-    /* Estilos globales y variables CSS */
-    :root {
-      --font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
-      --background-color: #f5f6f8;
-      --surface-color: #ffffff;
-      --card-bg-color: #ffffff;
-      --border-color: #e0e4e8;
-      --shadow-color: rgba(0,0,0,0.05);
-      --text-color: #333d47;
-      --text-muted-color: #8c98a5;
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Tablero de Productividad Avanzado</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Estilos globales y variables CSS mejoradas */
+        :root {
+            --font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+            --background-color: #f7f9fc; /* Fondo más claro y suave */
+            --surface-color: #ffffff; /* Blanco puro para los contenedores principales */
+            --card-bg-color: #ffffff;
+            --border-color: #e0e4e8;
+            --shadow-color: rgba(0,0,0,0.08); /* Sombra más sutil */
+            --text-color: #2c3e50;
+            --text-muted-color: #95a5a6;
+            --primary-color: #5d6afe; /* Azul vibrante de Asana/Notion */
+            --primary-hover-color: #4a54d6;
+            
+            --priority-high: #e74c3c;
+            --priority-medium: #f39c12; /* Naranja más cálido */
+            --priority-low: #2ecc71;
 
-      --primary-color: #5d6afe; /* Inspirado en Notion/Asana */
-      --primary-hover-color: #4a54d6;
-      
-      --priority-high: #e74c3c;
-      --priority-medium: #f1c40f;
-      --priority-low: #2ecc71;
+            --tag-bg-color: #e8f5ff; /* Azul pastel para etiquetas */
+            --tag-text-color: #3498db;
+        }
 
-      --tag-bg-color: #e6f7ff;
-      --tag-text-color: #00619a;
-    }
+        body {
+            font-family: var(--font-family);
+            background: var(--background-color);
+            margin: 0;
+            padding: 30px;
+            color: var(--text-color);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 40px;
+            color: var(--text-color);
+            font-weight: 700; /* Más peso para el título */
+            font-size: 2.8rem;
+        }
 
-    body {
-      font-family: var(--font-family);
-      background: var(--background-color);
-      margin: 0;
-      padding: 30px;
-      color: var(--text-color);
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-    }
-    
-    h1 {
-      text-align: center;
-      margin-bottom: 40px;
-      color: #2c3e50;
-      font-weight: 600;
-      font-size: 2.5rem;
-    }
+        /* --- Estilos del menú de navegación mejorados --- */
+        .header-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 25px;
+            background: var(--surface-color);
+            border-radius: 16px; /* Bordes más redondeados */
+            box-shadow: 0 8px 20px var(--shadow-color); /* Sombra más pronunciada */
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .header-nav .view-tabs {
+            display: flex;
+            gap: 8px;
+            background: #eef1f4; /* Fondo de pestañas más claro */
+            border-radius: 12px;
+            padding: 6px;
+        }
+        .header-nav .view-tabs button {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            border: none;
+            background: transparent;
+            border-radius: 10px; /* Bordes más redondeados */
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--text-color);
+            transition: all 0.2s ease;
+        }
+        .header-nav .view-tabs button:hover {
+            background: #e0e4e8;
+        }
+        .header-nav .view-tabs button.active {
+            background: var(--primary-color);
+            color: #fff;
+            box-shadow: 0 4px 10px rgba(93, 106, 254, 0.3);
+        }
+        .add-global-task-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            background: var(--primary-color);
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.2s ease, transform 0.2s ease;
+            box-shadow: 0 4px 10px rgba(93, 106, 254, 0.2);
+        }
+        .add-global-task-btn:hover {
+            background: var(--primary-hover-color);
+            transform: translateY(-2px);
+        }
 
-    /* --- Estilos del menú de navegación --- */
-    .header-nav {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 12px 25px;
-      background: var(--surface-color);
-      border-radius: 12px;
-      box-shadow: 0 4px 15px var(--shadow-color);
-      margin-bottom: 30px;
-    }
-    .header-nav .view-tabs {
-      display: flex;
-      gap: 5px;
-      background: #f0f2f5;
-      border-radius: 8px;
-      padding: 4px;
-    }
-    .header-nav .view-tabs button {
-      padding: 10px 18px;
-      border: none;
-      background: transparent;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: 600;
-      color: var(--text-color);
-      transition: all 0.2s ease;
-    }
-    .header-nav .view-tabs button:hover {
-        background: #e0e4e8;
-    }
-    .header-nav .view-tabs button.active {
-      background: var(--primary-color);
-      color: #fff;
-      box-shadow: 0 2px 5px rgba(93, 106, 254, 0.3);
-    }
-    .add-global-task-btn {
-        padding: 10px 20px;
-        background: var(--primary-color);
-        color: #fff;
-        border: none;
-        border-radius: 8px;
-        cursor: pointer;
-        font-weight: 600;
-        transition: background 0.2s ease;
-        box-shadow: 0 4px 10px rgba(93, 106, 254, 0.2);
-    }
-    .add-global-task-btn:hover {
-        background: var(--primary-hover-color);
-    }
+        /* --- Estilos del Tablero (Kanban) mejorados --- */
+        .board-view {
+            display: flex;
+            gap: 25px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .column {
+            background: var(--surface-color);
+            padding: 20px;
+            border-radius: 16px;
+            width: 350px;
+            min-height: 500px;
+            box-shadow: 0 6px 20px var(--shadow-color);
+            transition: box-shadow 0.3s ease;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+        .column:hover {
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+        .column h2 {
+            text-align: center;
+            margin: 0 0 20px;
+            color: var(--text-color);
+            font-weight: 600;
+            font-size: 1.4rem;
+        }
+        .task {
+            background: var(--card-bg-color);
+            margin: 10px 0;
+            padding: 20px;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-left 0.3s ease;
+            cursor: grab;
+            border-left: 5px solid transparent;
+            position: relative;
+        }
+        .task:active {
+            transform: scale(1.02);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .task[data-priority="Alta"] { border-left-color: var(--priority-high); }
+        .task[data-priority="Media"] { border-left-color: var(--priority-medium); }
+        .task[data-priority="Baja"] { border-left-color: var(--priority-low); }
 
-    /* --- Estilos del Tablero (Kanban) --- */
-    .board-view {
-      display: flex;
-      gap: 20px;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
-    .column {
-      background: var(--background-color);
-      padding: 15px;
-      border-radius: 12px;
-      width: 320px;
-      min-height: 500px;
-      box-shadow: 0 4px 15px var(--shadow-color);
-      transition: box-shadow 0.3s ease;
-      position: relative;
-      display: flex;
-      flex-direction: column;
-    }
-    .column:hover {
-      box-shadow: 0 6px 20px rgba(0,0,0,0.08);
-    }
-    .column h2 {
-      text-align: center;
-      margin: 0 0 15px;
-      color: var(--text-color);
-      font-weight: 600;
-      font-size: 1.2rem;
-    }
-    .task {
-      background: var(--card-bg-color);
-      margin: 8px 0;
-      padding: 15px;
-      border-radius: 10px;
-      display: flex;
-      flex-direction: column;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-      transition: transform 0.2s ease, box-shadow 0.2s ease, border-left 0.3s ease;
-      cursor: grab;
-      border-left: 5px solid transparent;
-      position: relative;
-    }
-    .task:active {
-      transform: scale(1.02);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    }
-    .task[data-priority="Alta"] { border-left-color: var(--priority-high); }
-    .task[data-priority="Media"] { border-left-color: var(--priority-medium); }
-    .task[data-priority="Baja"] { border-left-color: var(--priority-low); }
+        .task-content {
+            flex: 1;
+            margin-bottom: 15px;
+        }
+        .task-content h3 {
+            margin: 0 0 10px;
+            font-size: 1.2rem;
+            color: var(--text-color);
+            font-weight: 600;
+        }
+        .task-meta {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            font-size: 0.9em;
+            color: var(--text-muted-color);
+        }
+        .task-meta .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .task-meta .meta-item svg {
+            fill: none;
+            stroke: var(--text-muted-color);
+            width: 18px;
+            height: 18px;
+        }
+        .task-meta input, .task-meta select {
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 8px 10px;
+            font-size: 0.9em;
+            box-sizing: border-box;
+            width: 100%;
+            background: #fcfdfe;
+            color: var(--text-color);
+            transition: border-color 0.2s ease;
+        }
+        .task-meta input:focus, .task-meta select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+        .task-meta select {
+            cursor: pointer;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2395a5a6%22%20d%3D%22M287%2C197.3L159.2%2C69.5c-3.1-3.1-8.2-3.1-11.3%2C0L1.5%2C197.3c-3.1%2C3.1-3.1%2C8.2%2C0%2C11.3l19.5%2C19.5c3.1%2C3.1%2C8.2%2C3.1%2C11.3%2C0L145.7%2C101.9c3.1-3.1%2C8.2-3.1%2C11.3%2C0l113.1%2C113.1c3.1%2C3.1%2C8.2%2C3.1%2C11.3%2C0l19.5-19.5C290.1%2C205.5%2C290.1%2C200.4%2C287%2C197.3z%22%2F%3E%3C%2Fsvg%3E');
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 10px;
+            padding-right: 30px;
+        }
+        .task-tags {
+            grid-column: span 2;
+            margin-top: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .tag-badge {
+            background: var(--tag-bg-color);
+            color: var(--tag-text-color);
+            border-radius: 8px;
+            padding: 6px 12px;
+            font-size: 0.8em;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+        .add-task-btn {
+            width: 100%;
+            padding: 15px;
+            margin-top: auto;
+            border: 2px dashed var(--border-color);
+            background: transparent;
+            border-radius: 12px;
+            cursor: pointer;
+            color: var(--text-muted-color);
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-weight: 500;
+        }
+        .add-task-btn:hover {
+            background: #eef1f4;
+            border-color: #c0c6cc;
+        }
 
-    .task-content {
-      flex: 1;
-      margin-bottom: 15px;
-    }
-    .task-content h3 {
-      margin: 0 0 6px;
-      font-size: 1.1rem;
-      color: var(--text-color);
-      font-weight: 600;
-    }
-    .task-meta {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      font-size: 0.85em;
-      color: var(--text-muted-color);
-    }
-    .task-meta .meta-item {
-        display: flex;
-        align-items: center;
-        gap: 5px;
-    }
-    .task-meta .meta-item svg {
-        fill: var(--text-muted-color);
-        width: 16px;
-        height: 16px;
-    }
-    .task-meta input, .task-meta select {
-      border: 1px solid var(--border-color);
-      border-radius: 6px;
-      padding: 6px 8px;
-      font-size: 0.8em;
-      box-sizing: border-box;
-      width: 100%;
-      background: #f9fafc;
-      color: var(--text-color);
-    }
-    .task-meta select {
-        cursor: pointer;
-        -webkit-appearance: none;
-        -moz-appearance: none;
-        appearance: none;
-        background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%238c98a5%22%20d%3D%22M287%2C197.3L159.2%2C69.5c-3.1-3.1-8.2-3.1-11.3%2C0L1.5%2C197.3c-3.1%2C3.1-3.1%2C8.2%2C0%2C11.3l19.5%2C19.5c3.1%2C3.1%2C8.2%2C3.1%2C11.3%2C0L145.7%2C101.9c3.1-3.1%2C8.2-3.1%2C11.3%2C0l113.1%2C113.1c3.1%2C3.1%2C8.2%2C3.1%2C11.3%2C0l19.5-19.5C290.1%2C205.5%2C290.1%2C200.4%2C287%2C197.3z%22%2F%3E%3C%2Fsvg%3E');
-        background-repeat: no-repeat;
-        background-position: right 8px center;
-        background-size: 10px;
-        padding-right: 25px;
-    }
-    .task-tags {
-        grid-column: span 2;
-        margin-top: 5px;
-        display: flex;
-        flex-wrap: wrap;
-        gap: 5px;
-    }
-    .tag-badge {
-        background: var(--tag-bg-color);
-        color: var(--tag-text-color);
-        border-radius: 5px;
-        padding: 4px 8px;
-        font-size: 0.75em;
-        font-weight: 500;
-        white-space: nowrap;
-    }
-    .add-task-btn {
-      width: 100%;
-      padding: 12px;
-      margin-top: auto;
-      border: 2px dashed var(--border-color);
-      background: transparent;
-      border-radius: 8px;
-      cursor: pointer;
-      color: var(--text-muted-color);
-      transition: all 0.2s ease;
-    }
-    .add-task-btn:hover {
-      background: #e9eef2;
-      border-color: #c0c6cc;
-    }
+        /* --- Estilos de la Vista de Lista mejorados --- */
+        .list-view {
+            display: none;
+            max-width: 1400px;
+            margin: 0 auto;
+            background: var(--surface-color);
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 8px 20px var(--shadow-color);
+        }
+        .list-header {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr 0.8fr 1.2fr 1.5fr 0.5fr;
+            padding: 15px 0;
+            font-weight: 600;
+            border-bottom: 2px solid var(--border-color);
+            color: var(--text-muted-color);
+            font-size: 0.95rem;
+            gap: 10px;
+        }
+        .list-header span:not(:first-child) {
+            text-align: center;
+        }
+        .list-group-header {
+            font-size: 1.4rem;
+            font-weight: 600;
+            padding: 30px 0 15px;
+            color: var(--text-color);
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 15px;
+        }
+        .list-task {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr 0.8fr 1.2fr 1.5fr 0.5fr;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid var(--border-color);
+            transition: background 0.2s ease;
+            gap: 10px;
+        }
+        .list-task:hover {
+            background: #fcfdfe;
+        }
+        .list-task span, .list-task div {
+            padding: 0 10px;
+            text-align: center;
+        }
+        .list-task .task-title {
+            display: flex;
+            align-items: center;
+            font-weight: 500;
+            text-align: left;
+        }
+        .list-task .task-title input[type="checkbox"] {
+            margin-right: 20px;
+            transform: scale(1.3);
+            accent-color: var(--primary-color);
+        }
+        .list-task .task-title span {
+            padding: 0;
+        }
+        .list-task .task-title span[contenteditable]:hover {
+            background-color: #f0f2f5;
+            border-radius: 6px;
+            cursor: text;
+        }
+        .priority-badge {
+            padding: 6px 14px;
+            border-radius: 20px;
+            color: #fff;
+            font-size: 0.8em;
+            font-weight: 600;
+            display: inline-block;
+            text-align: center;
+        }
+        .priority-badge.alta { background: var(--priority-high); }
+        .priority-badge.media { background: var(--priority-medium); }
+        .priority-badge.baja { background: var(--priority-low); }
 
-    /* --- Estilos de la Vista de Lista --- */
-    .list-view {
-      display: none;
-      max-width: 1200px;
-      margin: 0 auto;
-      background: var(--surface-color);
-      border-radius: 12px;
-      padding: 20px;
-      box-shadow: 0 4px 15px var(--shadow-color);
-    }
-    .list-header {
-      display: grid;
-      grid-template-columns: 2fr 1fr 1fr 1fr 0.8fr 1.2fr 1.5fr 0.5fr; /* Columna para el checkbox */
-      padding: 10px 0;
-      font-weight: 600;
-      border-bottom: 2px solid var(--border-color);
-      color: var(--text-muted-color);
-      font-size: 0.9rem;
-    }
-    .list-header span:not(:first-child) {
-        text-align: center;
-    }
-    .list-group-header {
-      font-size: 1.2rem;
-      font-weight: 600;
-      padding: 20px 0 10px;
-      color: var(--text-color);
-      border-bottom: 1px solid var(--border-color);
-      margin-bottom: 10px;
-    }
-    .list-task {
-      display: grid;
-      grid-template-columns: 2fr 1fr 1fr 1fr 0.8fr 1.2fr 1.5fr 0.5fr;
-      align-items: center;
-      padding: 12px 0;
-      border-bottom: 1px solid var(--border-color);
-      transition: background 0.2s ease;
-    }
-    .list-task:hover {
-        background: #f9fafc;
-    }
-    .list-task span, .list-task div {
-      padding: 0 10px;
-      text-align: center;
-    }
-    .list-task .task-title {
-      display: flex;
-      align-items: center;
-      font-weight: 500;
-      text-align: left;
-    }
-    .list-task .task-title input[type="checkbox"] {
-      margin-right: 15px;
-      transform: scale(1.2);
-    }
-    .list-task .task-title span {
-        padding: 0;
-    }
-    .list-task .task-title span[contenteditable]:hover {
-        background-color: #f0f2f5;
-        border-radius: 4px;
-        cursor: text;
-    }
+        .list-task input[type="text"], .list-task input[type="date"], .list-task .time-input {
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 8px;
+            font-size: 0.9em;
+            width: 90%;
+            text-align: center;
+            background: #fcfdfe;
+            box-sizing: border-box;
+        }
+        .list-task input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(93, 106, 254, 0.1);
+        }
+        .list-task input[type="date"]::-webkit-calendar-picker-indicator {
+            cursor: pointer;
+        }
+        
+        .list-task .assignee-dropdown-container {
+            position: relative;
+            display: inline-block;
+            text-align: center;
+        }
+        .list-task .assignee-dropdown-container .current-assignee {
+            cursor: pointer;
+            color: var(--primary-color);
+            font-weight: 500;
+            padding: 8px 12px;
+            border-radius: 8px;
+            transition: background 0.2s ease;
+        }
+        .list-task .assignee-dropdown-container .current-assignee:hover {
+            background: #eef1f4;
+        }
+        .list-task .assignee-dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: var(--surface-color);
+            min-width: 180px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            z-index: 100;
+            border-radius: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            top: 100%;
+            margin-top: 10px;
+            border: 1px solid var(--border-color);
+            padding: 10px 0;
+        }
+        .list-task .assignee-dropdown-content span {
+            color: var(--text-color);
+            padding: 10px 20px;
+            display: block;
+            cursor: pointer;
+            text-align: left;
+            font-size: 0.9em;
+            transition: background 0.2s ease;
+        }
+        .list-task .assignee-dropdown-content span:hover {
+            background-color: #f0f2f5;
+        }
+        .list-task .assignee-dropdown-container:hover .assignee-dropdown-content {
+            display: block;
+        }
 
-    .priority-badge {
-      padding: 4px 10px;
-      border-radius: 20px;
-      color: #fff;
-      font-size: 0.75em;
-      font-weight: 600;
-      display: inline-block;
-      text-align: center;
-    }
-    .priority-badge.alta { background: var(--priority-high); }
-    .priority-badge.media { background: var(--priority-medium); }
-    .priority-badge.baja { background: var(--priority-low); }
+        .list-task .tags-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+        }
+        .list-task .tag-badge {
+            background: var(--tag-bg-color);
+            color: var(--tag-text-color);
+            border-radius: 8px;
+            padding: 6px 12px;
+            font-size: 0.8em;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s ease;
+            white-space: nowrap;
+        }
+        .list-task .tag-badge:hover {
+            background: #d4ecf9;
+        }
+        .list-task .tag-badge .remove-tag {
+            margin-left: 5px;
+            font-weight: bold;
+            color: var(--tag-text-color);
+        }
+        .list-task .tags-input {
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 6px 10px;
+            font-size: 0.8em;
+            width: 100px;
+            box-sizing: border-box;
+            background: #fcfdfe;
+        }
+        .list-task .delete-task-btn {
+            background: none;
+            border: 1px solid #e74c3c;
+            color: #e74c3c;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            line-height: 1;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+            padding: 0;
+        }
+        .list-task .delete-task-btn:hover {
+            background: #e74c3c;
+            color: #fff;
+        }
 
-    .list-task input[type="text"], .list-task input[type="date"] {
-        border: 1px solid var(--border-color);
-        border-radius: 6px;
-        padding: 6px;
-        font-size: 0.9em;
-        width: 90%;
-        text-align: center;
-        background: #f9fafc;
-    }
-    .list-task input:focus {
-        outline: none;
-        border-color: var(--primary-color);
-        box-shadow: 0 0 0 2px rgba(93, 106, 254, 0.2);
-    }
-    .list-task input[type="date"]::-webkit-calendar-picker-indicator {
-      cursor: pointer;
-    }
-    
-    .list-task .assignee-dropdown-container {
-        position: relative;
-        display: inline-block;
-        text-align: center;
-    }
-    .list-task .assignee-dropdown-container .current-assignee {
-        cursor: pointer;
-        color: var(--primary-color);
-        font-weight: 500;
-    }
-    .list-task .assignee-dropdown-content {
-        display: none;
-        position: absolute;
-        background-color: var(--surface-color);
-        min-width: 160px;
-        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.1);
-        z-index: 100;
-        border-radius: 8px;
-        left: 50%;
-        transform: translateX(-50%);
-        top: 100%;
-        margin-top: 5px;
-        border: 1px solid var(--border-color);
-        padding: 5px 0;
-    }
-    .list-task .assignee-dropdown-content span {
-        color: var(--text-color);
-        padding: 8px 15px;
-        display: block;
-        cursor: pointer;
-        text-align: left;
-        font-size: 0.9em;
-        transition: background 0.2s ease;
-    }
-    .list-task .assignee-dropdown-content span:hover {
-        background-color: #f0f2f5;
-    }
+        /* Media Queries para diseño responsivo */
+        @media (max-width: 1200px) {
+            .board-view {
+                flex-direction: column;
+                align-items: center;
+            }
+            .column {
+                width: 90%;
+            }
+        }
+        @media (max-width: 768px) {
+            .list-view {
+                padding: 15px;
+            }
+            .list-header, .list-task {
+                grid-template-columns: 1fr;
+                gap: 15px;
+                text-align: left;
+            }
+            .list-header span, .list-task span, .list-task div {
+                text-align: left;
+            }
+            .list-task .task-title {
+                grid-row: 1;
+            }
+        }
 
-    .list-task .tags-container {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 5px;
-    }
-    .list-task .tag-badge {
-        background: var(--tag-bg-color);
-        color: var(--tag-text-color);
-        border-radius: 5px;
-        padding: 4px 8px;
-        font-size: 0.75em;
-        font-weight: 500;
-        cursor: pointer;
-        transition: background 0.2s ease;
-    }
-    .list-task .tag-badge:hover {
-        background: #d4ecf9;
-    }
-    .list-task .tag-badge .remove-tag {
-        margin-left: 5px;
-        font-weight: bold;
-        color: var(--tag-text-color);
-    }
-    .list-task .tags-input {
-        border: 1px solid var(--border-color);
-        border-radius: 6px;
-        padding: 6px;
-        font-size: 0.8em;
-        width: 100%;
-        box-sizing: border-box;
-        background: #f9fafc;
-    }
-    .list-task .delete-task-btn {
-        background: #e74c3c;
-        color: #fff;
-        border: none;
-        border-radius: 50%;
-        width: 25px;
-        height: 25px;
-        font-size: 1rem;
-        cursor: pointer;
-        transition: background 0.2s ease;
-        line-height: 1;
-        text-align: center;
-        padding: 0;
-        margin: 0 auto;
-        display: block;
-    }
-    .list-task .delete-task-btn:hover {
-        background: #c0392b;
-    }
-    
-  </style>
+    </style>
 </head>
 <body>
-  <h1>Gestión de Proyectos</h1>
-  
-  <div class="header-nav">
-    <div class="view-tabs">
-      <button id="tablero-btn" class="active" onclick="setView('kanban')">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-trello"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><rect x="7" y="7" width="3" height="9"></rect><rect x="14" y="7" width="3" height="5"></rect></svg>
-          Tablero
-      </button>
-      <button id="lista-btn" onclick="setView('list')">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-list"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
-          Lista
-      </button>
+    <h1>Gestión de Proyectos</h1>
+    
+    <div class="header-nav">
+        <div class="view-tabs">
+            <button id="tablero-btn" class="active" onclick="setView('kanban')">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-trello"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><rect x="7" y="7" width="3" height="9"></rect><rect x="14" y="7" width="3" height="5"></rect></svg>
+                Tablero
+            </button>
+            <button id="lista-btn" onclick="setView('list')">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-list"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+                Lista
+            </button>
+        </div>
+        <button class="add-global-task-btn" onclick="addTask('por-hacer')">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-plus"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            Agregar tarea
+        </button>
     </div>
-    <button class="add-global-task-btn" onclick="addTask('por-hacer')">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-plus"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-        Agregar tarea
-    </button>
-  </div>
 
-  <div id="kanban-container" class="board-view">
-    <div class="column" data-status="por-hacer" ondrop="drop(event)" ondragover="allowDrop(event)">
-      <h2>Por hacer</h2>
-      <button class="add-task-btn" onclick="addTask('por-hacer')">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-plus"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-          Añadir tarea
-      </button>
+    <div id="kanban-container" class="board-view">
+        <div class="column" data-status="por-hacer" ondrop="drop(event)" ondragover="allowDrop(event)">
+            <h2>Por hacer</h2>
+            <button class="add-task-btn" onclick="addTask('por-hacer')">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-plus"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                Añadir tarea
+            </button>
+        </div>
+        <div class="column" data-status="en-progreso" ondrop="drop(event)" ondragover="allowDrop(event)">
+            <h2>En progreso</h2>
+            <button class="add-task-btn" onclick="addTask('en-progreso')">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-plus"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                Añadir tarea
+            </button>
+        </div>
+        <div class="column" data-status="hecho" ondrop="drop(event)" ondragover="allowDrop(event)">
+            <h2>Hecho</h2>
+            <button class="add-task-btn" onclick="addTask('hecho')">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-plus"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                Añadir tarea
+            </button>
+        </div>
     </div>
-    <div class="column" data-status="en-progreso" ondrop="drop(event)" ondragover="allowDrop(event)">
-      <h2>En progreso</h2>
-      <button class="add-task-btn" onclick="addTask('en-progreso')">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-plus"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-          Añadir tarea
-      </button>
+
+    <div id="list-container" class="list-view">
+        <div class="list-header">
+            <span>Tarea</span>
+            <span>Inicio</span>
+            <span>Fin</span>
+            <span>Colaboradores</span>
+            <span>Prioridad</span>
+            <span>Tiempo</span>
+            <span>Etiquetas</span>
+            <span></span>
+        </div>
     </div>
-    <div class="column" data-status="hecho" ondrop="drop(event)" ondragover="allowDrop(event)">
-      <h2>Hecho</h2>
-      <button class="add-task-btn" onclick="addTask('hecho')">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-plus"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-          Añadir tarea
-      </button>
-    </div>
-  </div>
 
-  <div id="list-container" class="list-view">
-    <div class="list-header">
-      <span>Tarea</span>
-      <span>Inicio</span>
-      <span>Fin</span>
-      <span>Colaboradores</span>
-      <span>Prioridad</span>
-      <span>Tiempo</span>
-      <span>Etiquetas</span>
-      <span></span> </div>
-  </div>
+    <script>
+        // --- Modelo de Datos ---
+        let tasks = [
+            { id: 'task-1', title: 'Diseñar UI', status: 'por-hacer', priority: 'Alta', assignee: 'Victor', startDate: '2025-08-10', endDate: '2025-08-30', estimatedTime: 8, loggedTime: 2, tags: ['Diseño', 'Frontend'] },
+            { id: 'task-2', title: 'Definir MVP', status: 'por-hacer', priority: 'Media', assignee: 'Victor', startDate: '2025-08-08', endDate: '2025-09-05', estimatedTime: 4, loggedTime: 1, tags: ['Producto'] },
+            { id: 'task-3', title: 'Implementar login', status: 'en-progreso', priority: 'Alta', assignee: 'Ana', startDate: '2025-08-15', endDate: '2025-08-25', estimatedTime: 12, loggedTime: 6, tags: ['Desarrollo', 'Backend'] },
+            { id: 'task-4', title: 'Reunión de seguimiento', status: 'por-hacer', priority: 'Baja', assignee: 'Equipo', startDate: '2025-08-13', endDate: '2025-08-15', estimatedTime: 1, loggedTime: 0, tags: ['Reunión'] },
+            { id: 'task-5', title: 'Documentación técnica', status: 'hecho', priority: 'Baja', assignee: 'Luis', startDate: '2025-08-05', endDate: '2025-08-10', estimatedTime: 5, loggedTime: 5, tags: ['Documentación'] }
+        ];
 
-  <script>
-    // --- Modelo de Datos ---
-    let tasks = [
-      { id: 'task-1', title: 'Diseñar UI', status: 'por-hacer', priority: 'Alta', assignee: 'Victor', startDate: '2025-08-10', endDate: '2025-08-30', estimatedTime: 8, loggedTime: 2, tags: ['Diseño', 'Frontend'] },
-      { id: 'task-2', title: 'Definir MVP', status: 'por-hacer', priority: 'Media', assignee: 'Victor', startDate: '2025-08-08', endDate: '2025-09-05', estimatedTime: 4, loggedTime: 1, tags: ['Producto'] },
-      { id: 'task-3', title: 'Implementar login', status: 'en-progreso', priority: 'Alta', assignee: 'Ana', startDate: '2025-08-15', endDate: '2025-08-25', estimatedTime: 12, loggedTime: 6, tags: ['Desarrollo', 'Backend'] },
-      { id: 'task-4', title: 'Reunión de seguimiento', status: 'por-hacer', priority: 'Baja', assignee: 'Equipo', startDate: '2025-08-13', endDate: '2025-08-15', estimatedTime: 1, loggedTime: 0, tags: ['Reunión'] },
-      { id: 'task-5', title: 'Documentación técnica', status: 'hecho', priority: 'Baja', assignee: 'Luis', startDate: '2025-08-05', endDate: '2025-08-10', estimatedTime: 5, loggedTime: 5, tags: ['Documentación'] }
-    ];
+        const availableAssignees = ['Victor', 'Ana', 'Luis', 'Carlos', 'Elena', 'Equipo', 'Sin asignar'];
 
-    const availableAssignees = ['Victor', 'Ana', 'Luis', 'Carlos', 'Elena', 'Equipo', 'Sin asignar'];
+        // --- Lógica de Vistas y Renderizado ---
+        const kanbanContainer = document.getElementById('kanban-container');
+        const listContainer = document.getElementById('list-container');
+        const kanbanBtn = document.getElementById('tablero-btn');
+        const listBtn = document.getElementById('lista-btn');
 
-    // --- Lógica de Vistas y Renderizado ---
-    const kanbanContainer = document.getElementById('kanban-container');
-    const listContainer = document.getElementById('list-container');
-    const kanbanBtn = document.getElementById('tablero-btn');
-    const listBtn = document.getElementById('lista-btn');
-
-    function setView(view) {
-      localStorage.setItem('currentView', view);
-      if (view === 'kanban') {
-        kanbanContainer.style.display = 'flex';
-        listContainer.style.display = 'none';
-        kanbanBtn.classList.add('active');
-        listBtn.classList.remove('active');
-        renderKanban();
-      } else if (view === 'list') {
-        kanbanContainer.style.display = 'none';
-        listContainer.style.display = 'block';
-        kanbanBtn.classList.remove('active');
-        listBtn.classList.add('active');
-        renderList();
-      }
-    }
-
-    function renderKanban() {
-      document.querySelectorAll('.column > .task').forEach(taskEl => taskEl.remove());
-      tasks.forEach(task => {
-        const taskEl = document.createElement('div');
-        taskEl.className = 'task';
-        taskEl.id = task.id;
-        taskEl.setAttribute('draggable', 'true');
-        taskEl.setAttribute('data-priority', task.priority);
-
-        const priorityOptions = ['Alta', 'Media', 'Baja'].map(p => 
-          `<option value="${p}" ${task.priority === p ? 'selected' : ''}>${p}</option>`
-        ).join('');
-        const assigneeOptions = availableAssignees.map(a => 
-          `<option value="${a}" ${task.assignee === a ? 'selected' : ''}>${a}</option>`
-        ).join('');
-
-        taskEl.innerHTML = `
-          <div class="task-content">
-            <h3 contenteditable="true" onblur="updateTaskProperty(this, '${task.id}', 'title')">${task.title}</h3>
-          </div>
-          <div class="task-meta">
-            <div class="meta-item">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-user"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                <select onchange="updateTaskProperty(this, '${task.id}', 'assignee')">
-                    ${assigneeOptions}
-                </select>
-            </div>
-            <div class="meta-item">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-flag"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path><line x1="4" y1="22" x2="4" y2="15"></line></svg>
-                <select onchange="updateTaskProperty(this, '${task.id}', 'priority')">
-                    ${priorityOptions}
-                </select>
-            </div>
-            <div class="meta-item" style="grid-column: span 2;">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-calendar"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-                <input type="date" value="${task.startDate}" onchange="updateTaskProperty(this, '${task.id}', 'startDate')">
-                -
-                <input type="date" value="${task.endDate}" onchange="updateTaskProperty(this, '${task.id}', 'endDate')">
-            </div>
-            <div class="meta-item" style="grid-column: span 2;">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-clock"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-                <input type="number" placeholder="Est. (h)" value="${task.estimatedTime}" onchange="updateTaskProperty(this, '${task.id}', 'estimatedTime')">
-                /
-                <input type="number" placeholder="Reg. (h)" value="${task.loggedTime}" onchange="updateTaskProperty(this, '${task.id}', 'loggedTime')">
-            </div>
-            ${task.tags && task.tags.length > 0 ? `
-                <div class="task-tags" style="grid-column: span 2;">
-                    ${task.tags.map(tag => `<span class="tag-badge">${tag}</span>`).join('')}
-                </div>
-            ` : ''}
-          </div>
-        `;
-        taskEl.addEventListener('dragstart', drag);
-
-        const targetColumn = kanbanContainer.querySelector(`.column[data-status="${task.status}"]`);
-        if (targetColumn) {
-          const addTaskBtn = targetColumn.querySelector('.add-task-btn');
-          targetColumn.insertBefore(taskEl, addTaskBtn);
+        function setView(view) {
+            localStorage.setItem('currentView', view);
+            if (view === 'kanban') {
+                kanbanContainer.style.display = 'flex';
+                listContainer.style.display = 'none';
+                kanbanBtn.classList.add('active');
+                listBtn.classList.remove('active');
+                renderKanban();
+            } else if (view === 'list') {
+                kanbanContainer.style.display = 'none';
+                listContainer.style.display = 'block';
+                kanbanBtn.classList.remove('active');
+                listBtn.classList.add('active');
+                renderList();
+            }
         }
-      });
-    }
 
-    function renderList() {
-      listContainer.querySelectorAll('.list-group').forEach(group => group.remove());
-      const groups = tasks.reduce((acc, task) => {
-        (acc[task.status] = acc[task.status] || []).push(task);
-        return acc;
-      }, {});
-      
-      const statusMap = {
-        'por-hacer': 'Por hacer',
-        'en-progreso': 'En progreso',
-        'hecho': 'Hecho'
-      };
+        function renderKanban() {
+            document.querySelectorAll('.column > .task').forEach(taskEl => taskEl.remove());
+            tasks.forEach(task => {
+                const taskEl = document.createElement('div');
+                taskEl.className = 'task';
+                taskEl.id = task.id;
+                taskEl.setAttribute('draggable', 'true');
+                taskEl.setAttribute('data-priority', task.priority);
 
-      for (const status in groups) {
-        const groupEl = document.createElement('div');
-        groupEl.className = 'list-group';
-        groupEl.innerHTML = `<div class="list-group-header">${statusMap[status]} (${groups[status].length})</div>`;
-        groups[status].forEach(task => {
-          const taskEl = document.createElement('div');
-          taskEl.className = 'list-task';
-          taskEl.innerHTML = `
-            <div class="task-title">
-              <input type="checkbox" ${task.status === 'hecho' ? 'checked' : ''} onclick="updateTaskStatus(this, '${task.id}')"/>
-              <span contenteditable="true" onblur="updateTaskProperty(this, '${task.id}', 'title')">${task.title}</span>
-            </div>
-            <span><input type="date" class="date-input" value="${task.startDate}" onchange="updateTaskProperty(this, '${task.id}', 'startDate')"></span>
-            <span><input type="date" class="date-input" value="${task.endDate}" onchange="updateTaskProperty(this, '${task.id}', 'endDate')"></span>
-            <div class="assignee-dropdown-container">
-                <span class="current-assignee">${task.assignee}</span>
-                <div class="assignee-dropdown-content">
-                    ${availableAssignees.map(a => `<span onclick="updateTaskProperty(this, '${task.id}', 'assignee', '${a}')">${a}</span>`).join('')}
-                </div>
-            </div>
-            <div><span class="priority-badge ${task.priority.toLowerCase()}">${task.priority}</span></div>
-            <div>
-                <input type="number" class="time-input" placeholder="Est." value="${task.estimatedTime}" onchange="updateTaskProperty(this, '${task.id}', 'estimatedTime')">h /
-                <input type="number" class="time-input" placeholder="Reg." value="${task.loggedTime}" onchange="updateTaskProperty(this, '${task.id}', 'loggedTime')">h
-            </div>
-            <div>
-                <div class="tags-container">
-                    ${task.tags.map(tag => `<span class="tag-badge" onclick="removeTag('${task.id}', '${tag}')">${tag} <span class="remove-tag">×</span></span>`).join('')}
-                    <input type="text" class="tags-input" placeholder="Añadir..."
-                           onkeypress="if(event.key === 'Enter') addTag(this, '${task.id}');"
-                           onblur="addTag(this, '${task.id}', true)">
-                </div>
-            </div>
-            <span><button class="delete-task-btn" onclick="deleteTask('${task.id}')">×</button></span>
-          `;
-          groupEl.appendChild(taskEl);
-        });
-        listContainer.appendChild(groupEl);
-      }
-    }
+                const priorityOptions = ['Alta', 'Media', 'Baja'].map(p =>
+                    `<option value="${p}" ${task.priority === p ? 'selected' : ''}>${p}</option>`
+                ).join('');
+                const assigneeOptions = availableAssignees.map(a =>
+                    `<option value="${a}" ${task.assignee === a ? 'selected' : ''}>${a}</option>`
+                ).join('');
 
-    // --- Funciones de Lógica ---
-    function addTask(status) {
-      const newTask = {
-        id: `task-${Date.now()}`,
-        title: 'Nueva tarea',
-        status: status,
-        priority: 'Media',
-        assignee: 'Sin asignar',
-        startDate: new Date().toISOString().slice(0, 10),
-        endDate: '',
-        estimatedTime: 0,
-        loggedTime: 0,
-        subtasks: [],
-        tags: []
-      };
-      tasks.push(newTask);
-      const currentView = localStorage.getItem('currentView') || 'kanban';
-      setView(currentView);
-    }
-    
-    function deleteTask(taskId) {
-      if (confirm('¿Estás seguro de que quieres eliminar esta tarea?')) {
-        tasks = tasks.filter(task => task.id !== taskId);
-        saveTasks();
-        const currentView = localStorage.getItem('currentView') || 'kanban';
-        setView(currentView);
-      }
-    }
-    
-    function updateTaskProperty(element, taskId, property, value = null) {
-        const task = tasks.find(t => t.id === taskId);
-        if (task) {
-            if (property === 'title') task.title = element.innerText;
-            else if (property === 'priority') task.priority = element.value;
-            else if (property === 'assignee') task.assignee = value || element.value;
-            else if (property === 'startDate') task.startDate = element.value;
-            else if (property === 'endDate') task.endDate = element.value;
-            else if (property === 'estimatedTime') task.estimatedTime = element.value;
-            else if (property === 'loggedTime') task.loggedTime = element.value;
+                taskEl.innerHTML = `
+                    <div class="task-content">
+                        <h3 contenteditable="true" onblur="updateTaskProperty(this, '${task.id}', 'title')">${task.title}</h3>
+                    </div>
+                    <div class="task-meta">
+                        <div class="meta-item">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-user"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                            <select onchange="updateTaskProperty(this, '${task.id}', 'assignee')">
+                                ${assigneeOptions}
+                            </select>
+                        </div>
+                        <div class="meta-item">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-flag"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path><line x1="4" y1="22" x2="4" y2="15"></line></svg>
+                            <select onchange="updateTaskProperty(this, '${task.id}', 'priority')">
+                                ${priorityOptions}
+                            </select>
+                        </div>
+                        <div class="meta-item" style="grid-column: span 2;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-calendar"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                            <input type="date" value="${task.startDate}" onchange="updateTaskProperty(this, '${task.id}', 'startDate')">
+                            -
+                            <input type="date" value="${task.endDate}" onchange="updateTaskProperty(this, '${task.id}', 'endDate')">
+                        </div>
+                        <div class="meta-item" style="grid-column: span 2;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-clock"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                            <input type="number" placeholder="Est. (h)" value="${task.estimatedTime}" onchange="updateTaskProperty(this, '${task.id}', 'estimatedTime')">
+                            /
+                            <input type="number" placeholder="Reg. (h)" value="${task.loggedTime}" onchange="updateTaskProperty(this, '${task.id}', 'loggedTime')">
+                        </div>
+                        ${task.tags && task.tags.length > 0 ? `
+                            <div class="task-tags" style="grid-column: span 2;">
+                                ${task.tags.map(tag => `<span class="tag-badge">${tag}</span>`).join('')}
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+                taskEl.addEventListener('dragstart', drag);
+
+                const targetColumn = kanbanContainer.querySelector(`.column[data-status="${task.status}"]`);
+                if (targetColumn) {
+                    const addTaskBtn = targetColumn.querySelector('.add-task-btn');
+                    targetColumn.insertBefore(taskEl, addTaskBtn);
+                }
+            });
+        }
+
+        function renderList() {
+            listContainer.querySelectorAll('.list-group').forEach(group => group.remove());
+            const groups = tasks.reduce((acc, task) => {
+                (acc[task.status] = acc[task.status] || []).push(task);
+                return acc;
+            }, {});
+            
+            const statusMap = {
+                'por-hacer': 'Por hacer',
+                'en-progreso': 'En progreso',
+                'hecho': 'Hecho'
+            };
+
+            for (const status in groups) {
+                const groupEl = document.createElement('div');
+                groupEl.className = 'list-group';
+                groupEl.innerHTML = `<div class="list-group-header">${statusMap[status]} (${groups[status].length})</div>`;
+                groups[status].forEach(task => {
+                    const taskEl = document.createElement('div');
+                    taskEl.className = 'list-task';
+                    taskEl.innerHTML = `
+                        <div class="task-title">
+                            <input type="checkbox" ${task.status === 'hecho' ? 'checked' : ''} onclick="updateTaskStatus(this, '${task.id}')"/>
+                            <span contenteditable="true" onblur="updateTaskProperty(this, '${task.id}', 'title')">${task.title}</span>
+                        </div>
+                        <span><input type="date" class="date-input" value="${task.startDate}" onchange="updateTaskProperty(this, '${task.id}', 'startDate')"></span>
+                        <span><input type="date" class="date-input" value="${task.endDate}" onchange="updateTaskProperty(this, '${task.id}', 'endDate')"></span>
+                        <div class="assignee-dropdown-container">
+                            <span class="current-assignee">${task.assignee}</span>
+                            <div class="assignee-dropdown-content">
+                                ${availableAssignees.map(a => `<span onclick="updateTaskProperty(this, '${task.id}', 'assignee', '${a}')">${a}</span>`).join('')}
+                            </div>
+                        </div>
+                        <div><span class="priority-badge ${task.priority.toLowerCase()}">${task.priority}</span></div>
+                        <div>
+                            <input type="number" class="time-input" placeholder="Est." value="${task.estimatedTime}" onchange="updateTaskProperty(this, '${task.id}', 'estimatedTime')">h /
+                            <input type="number" class="time-input" placeholder="Reg." value="${task.loggedTime}" onchange="updateTaskProperty(this, '${task.id}', 'loggedTime')">h
+                        </div>
+                        <div>
+                            <div class="tags-container">
+                                ${task.tags.map(tag => `<span class="tag-badge" onclick="removeTag('${task.id}', '${tag}')">${tag} <span class="remove-tag">×</span></span>`).join('')}
+                                <input type="text" class="tags-input" placeholder="Añadir..."
+                                    onkeypress="if(event.key === 'Enter') addTag(this, '${task.id}');"
+                                    onblur="addTag(this, '${task.id}', true)">
+                            </div>
+                        </div>
+                        <span><button class="delete-task-btn" onclick="deleteTask('${task.id}')">×</button></span>
+                    `;
+                    groupEl.appendChild(taskEl);
+                });
+                listContainer.appendChild(groupEl);
+            }
+        }
+
+        // --- Funciones de Lógica ---
+        function addTask(status) {
+            const newTask = {
+                id: `task-${Date.now()}`,
+                title: 'Nueva tarea',
+                status: status,
+                priority: 'Media',
+                assignee: 'Sin asignar',
+                startDate: new Date().toISOString().slice(0, 10),
+                endDate: '',
+                estimatedTime: 0,
+                loggedTime: 0,
+                subtasks: [],
+                tags: []
+            };
+            tasks.push(newTask);
             saveTasks();
             const currentView = localStorage.getItem('currentView') || 'kanban';
-            if (currentView === 'kanban') renderKanban();
-            else renderList();
+            setView(currentView);
         }
-    }
-
-    function addTag(inputElement, taskId, onBlur = false) {
-        if (inputElement.value.trim() === '' && onBlur) return;
-        if (event.key === 'Enter' || onBlur) {
+        
+        function deleteTask(taskId) {
+            if (confirm('¿Estás seguro de que quieres eliminar esta tarea?')) {
+                tasks = tasks.filter(task => task.id !== taskId);
+                saveTasks();
+                const currentView = localStorage.getItem('currentView') || 'kanban';
+                setView(currentView);
+            }
+        }
+        
+        function updateTaskProperty(element, taskId, property, value = null) {
             const task = tasks.find(t => t.id === taskId);
-            const newTag = inputElement.value.trim();
-            if (task && newTag && !task.tags.includes(newTag)) {
-                task.tags.push(newTag);
-                inputElement.value = '';
+            if (task) {
+                if (property === 'title') task.title = element.innerText;
+                else if (property === 'priority') task.priority = element.value;
+                else if (property === 'assignee') task.assignee = value || element.value;
+                else if (property === 'startDate') task.startDate = element.value;
+                else if (property === 'endDate') task.endDate = element.value;
+                else if (property === 'estimatedTime') task.estimatedTime = element.value;
+                else if (property === 'loggedTime') task.loggedTime = element.value;
+                saveTasks();
+                const currentView = localStorage.getItem('currentView') || 'kanban';
+                if (currentView === 'kanban') renderKanban();
+                else renderList();
+            }
+        }
+
+        function addTag(inputElement, taskId, onBlur = false) {
+            if (inputElement.value.trim() === '' && onBlur) return;
+            if (event.key === 'Enter' || onBlur) {
+                const task = tasks.find(t => t.id === taskId);
+                const newTag = inputElement.value.trim();
+                if (task && newTag && !task.tags.includes(newTag)) {
+                    task.tags.push(newTag);
+                    inputElement.value = '';
+                    renderList();
+                    saveTasks();
+                }
+            }
+        }
+
+        function removeTag(taskId, tagToRemove) {
+            const task = tasks.find(t => t.id === taskId);
+            if (task) {
+                task.tags = task.tags.filter(tag => tag !== tagToRemove);
                 renderList();
                 saveTasks();
             }
         }
-    }
 
-    function removeTag(taskId, tagToRemove) {
-        const task = tasks.find(t => t.id === taskId);
-        if (task) {
-            task.tags = task.tags.filter(tag => tag !== tagToRemove);
-            renderList();
-            saveTasks();
+        function updateTaskStatus(checkbox, taskId) {
+            const task = tasks.find(t => t.id === taskId);
+            if (task) {
+                task.status = checkbox.checked ? 'hecho' : 'por-hacer';
+                saveTasks();
+                const currentView = localStorage.getItem('currentView') || 'kanban';
+                setView(currentView);
+            }
         }
-    }
 
-    function updateTaskStatus(checkbox, taskId) {
-      const task = tasks.find(t => t.id === taskId);
-      if (task) {
-        task.status = checkbox.checked ? 'hecho' : 'por-hacer';
-        saveTasks();
-        const currentView = localStorage.getItem('currentView') || 'kanban';
-        setView(currentView);
-      }
-    }
+        // --- Funciones de Drag and Drop ---
+        function allowDrop(ev) { ev.preventDefault(); }
+        function drag(ev) { ev.dataTransfer.setData("text/plain", ev.target.id); }
 
-    // --- Funciones de Drag and Drop ---
-    function allowDrop(ev) { ev.preventDefault(); }
-    function drag(ev) { ev.dataTransfer.setData("text/plain", ev.target.id); }
+        function drop(ev) {
+            ev.preventDefault();
+            const data = ev.dataTransfer.getData("text/plain");
+            const taskElement = document.getElementById(data);
+            const targetColumn = ev.target.closest('.column');
+            if (targetColumn) {
+                const task = tasks.find(t => t.id === data);
+                if (task) { task.status = targetColumn.dataset.status; }
+                const addTaskBtn = targetColumn.querySelector('.add-task-btn');
+                targetColumn.insertBefore(taskElement, addTaskBtn);
+                saveTasks();
+            }
+        }
 
-    function drop(ev) {
-      ev.preventDefault();
-      const data = ev.dataTransfer.getData("text/plain");
-      const taskElement = document.getElementById(data);
-      const targetColumn = ev.target.closest('.column');
-      if (targetColumn) {
-        const task = tasks.find(t => t.id === data);
-        if (task) { task.status = targetColumn.dataset.status; }
-        const addTaskBtn = targetColumn.querySelector('.add-task-btn');
-        targetColumn.insertBefore(taskElement, addTaskBtn);
-        saveTasks();
-      }
-    }
+        // --- Persistencia de Datos con LocalStorage ---
+        function saveTasks() { localStorage.setItem('tasks', JSON.stringify(tasks)); }
+        function loadTasks() {
+            const storedTasks = localStorage.getItem('tasks');
+            if (storedTasks) { tasks = JSON.parse(storedTasks); }
+        }
 
-    // --- Persistencia de Datos con LocalStorage ---
-    function saveTasks() { localStorage.setItem('tasks', JSON.stringify(tasks)); }
-    function loadTasks() {
-      const storedTasks = localStorage.getItem('tasks');
-      if (storedTasks) { tasks = JSON.parse(storedTasks); }
-    }
-
-    // Inicializar al cargar la página
-    document.addEventListener('DOMContentLoaded', () => {
-      loadTasks();
-      const lastView = localStorage.getItem('currentView') || 'kanban';
-      setView(lastView);
-    });
-  </script>
+        // Inicializar al cargar la página
+        document.addEventListener('DOMContentLoaded', () => {
+            loadTasks();
+            const lastView = localStorage.getItem('currentView') || 'kanban';
+            setView(lastView);
+        });
+    </script>
 </body>
 </html>
