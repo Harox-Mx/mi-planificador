@@ -15,29 +15,36 @@
       text-align: center;
       color: #333;
     }
-    .semana {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 20px;
-      margin-top: 30px;
-    }
     .dia {
       background-color: white;
-      padding: 15px;
-      border-radius: 8px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      padding: 20px;
+      margin-top: 30px;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
     }
     .dia h2 {
       margin-top: 0;
-      font-size: 18px;
+      font-size: 20px;
       color: #007bff;
     }
-    input {
-      width: 100%;
+    .card {
+      background-color: #ffffff;
+      padding: 12px;
+      margin-top: 15px;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+    .card h3 {
+      margin-top: 0;
+      color: #333;
+    }
+    input, select, textarea {
+      margin-top: 8px;
       padding: 8px;
-      margin-top: 10px;
-      border: 1px solid #ccc;
+      width: 100%;
       border-radius: 4px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
     }
     button {
       margin-top: 10px;
@@ -77,61 +84,63 @@
     .delete-btn:hover {
       background-color: #c82333;
     }
+    .prioridad {
+      padding: 4px 8px;
+      border-radius: 4px;
+      margin-left: 10px;
+      font-size: 12px;
+      color: white;
+    }
+    .prioridad.alta {
+      background-color: #dc3545;
+    }
+    .prioridad.media {
+      background-color: #ffc107;
+      color: black;
+    }
+    .prioridad.baja {
+      background-color: #28a745;
+    }
   </style>
 </head>
 <body>
   <h1>🗓️ Planificador Semanal</h1>
-  <div class="semana">
-    <!-- Días de la semana -->
-    <div class="dia" id="lunes">
-      <h2>Lunes</h2>
-      <input type="text" placeholder="Nueva tarea">
-      <button onclick="agregarTarea('lunes')">Agregar</button>
-      <ul></ul>
+
+  <div class="dia" id="lunes">
+    <h2>Lunes</h2>
+
+    <!-- Reuniones -->
+    <div class="card">
+      <h3>🧑‍💼 Reuniones</h3>
+      <input type="text" placeholder="Hora y título" id="reunion-lunes">
+      <button onclick="agregarReunion('lunes')">Agregar reunión</button>
+      <ul id="lista-reuniones-lunes"></ul>
     </div>
-    <div class="dia" id="martes">
-      <h2>Martes</h2>
-      <input type="text" placeholder="Nueva tarea">
-      <button onclick="agregarTarea('martes')">Agregar</button>
-      <ul></ul>
+
+    <!-- Tareas -->
+    <div class="card">
+      <h3>✅ Tareas</h3>
+      <input type="text" placeholder="Tarea" id="tarea-lunes">
+      <select id="prioridad-lunes">
+        <option value="Alta">Alta</option>
+        <option value="Media">Media</option>
+        <option value="Baja">Baja</option>
+      </select>
+      <button onclick="agregarTareaConPrioridad('lunes')">Agregar tarea</button>
+      <ul id="lista-tareas-lunes"></ul>
     </div>
-    <div class="dia" id="miércoles">
-      <h2>Miércoles</h2>
-      <input type="text" placeholder="Nueva tarea">
-      <button onclick="agregarTarea('miércoles')">Agregar</button>
-      <ul></ul>
-    </div>
-    <div class="dia" id="jueves">
-      <h2>Jueves</h2>
-      <input type="text" placeholder="Nueva tarea">
-      <button onclick="agregarTarea('jueves')">Agregar</button>
-      <ul></ul>
-    </div>
-    <div class="dia" id="viernes">
-      <h2>Viernes</h2>
-      <input type="text" placeholder="Nueva tarea">
-      <button onclick="agregarTarea('viernes')">Agregar</button>
-      <ul></ul>
-    </div>
-    <div class="dia" id="sábado">
-      <h2>Sábado</h2>
-      <input type="text" placeholder="Nueva tarea">
-      <button onclick="agregarTarea('sábado')">Agregar</button>
-      <ul></ul>
-    </div>
-    <div class="dia" id="domingo">
-      <h2>Domingo</h2>
-      <input type="text" placeholder="Nueva tarea">
-      <button onclick="agregarTarea('domingo')">Agregar</button>
-      <ul></ul>
+
+    <!-- Notas -->
+    <div class="card">
+      <h3>📝 Notas</h3>
+      <textarea id="nota-lunes" placeholder="Escribe tus notas..." rows="4"></textarea>
     </div>
   </div>
 
   <script>
-    function agregarTarea(diaId) {
-      const dia = document.getElementById(diaId);
-      const input = dia.querySelector("input");
-      const ul = dia.querySelector("ul");
+    function agregarReunion(dia) {
+      const input = document.getElementById(`reunion-${dia}`);
+      const ul = document.getElementById(`lista-reuniones-${dia}`);
       const texto = input.value.trim();
       if (texto === "") return;
 
@@ -146,6 +155,25 @@
       li.appendChild(btn);
       ul.appendChild(li);
       input.value = "";
+    }
+
+    function agregarTareaConPrioridad(dia) {
+      const tarea = document.getElementById(`tarea-${dia}`).value.trim();
+      const prioridad = document.getElementById(`prioridad-${dia}`).value;
+      const ul = document.getElementById(`lista-tareas-${dia}`);
+      if (tarea === "") return;
+
+      const li = document.createElement("li");
+      li.innerHTML = `${tarea} <span class="prioridad ${prioridad.toLowerCase()}">${prioridad}</span>`;
+
+      const btn = document.createElement("button");
+      btn.textContent = "Eliminar";
+      btn.className = "delete-btn";
+      btn.onclick = () => li.remove();
+
+      li.appendChild(btn);
+      ul.appendChild(li);
+      document.getElementById(`tarea-${dia}`).value = "";
     }
   </script>
 </body>
