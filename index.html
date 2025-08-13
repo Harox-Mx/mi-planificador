@@ -238,15 +238,24 @@
     }
     .list-header {
       display: grid;
-      grid-template-columns: 2fr 1fr 1fr 1fr 0.8fr 1.2fr 1.5fr 0.5fr; /* Columna para el checkbox */
+      /* Las columnas se definirán dinámicamente en JS */
       padding: 10px 0;
       font-weight: 600;
       border-bottom: 2px solid var(--border-color);
       color: var(--text-muted-color);
       font-size: 0.9rem;
     }
-    .list-header span:not(:first-child) {
+    .list-header .header-cell {
+        padding: 0 10px;
         text-align: center;
+        cursor: grab;
+        position: relative;
+    }
+    .list-header .header-cell:first-child {
+        text-align: left;
+    }
+    .list-header .header-cell:active {
+      cursor: grabbing;
     }
     .list-group-header {
       font-size: 1.2rem;
@@ -258,7 +267,7 @@
     }
     .list-task {
       display: grid;
-      grid-template-columns: 2fr 1fr 1fr 1fr 0.8fr 1.2fr 1.5fr 0.5fr;
+      /* Las columnas se definirán dinámicamente en JS */
       align-items: center;
       padding: 12px 0;
       border-bottom: 1px solid var(--border-color);
@@ -267,9 +276,9 @@
     .list-task:hover {
         background: #f9fafc;
     }
-    .list-task span, .list-task div {
-      padding: 0 10px;
-      text-align: center;
+    .list-task .cell {
+        padding: 0 10px;
+        text-align: center;
     }
     .list-task .task-title {
       display: flex;
@@ -458,15 +467,8 @@
   </div>
 
   <div id="list-container" class="list-view">
-    <div class="list-header">
-      <span>Tarea</span>
-      <span>Inicio</span>
-      <span>Fin</span>
-      <span>Colaboradores</span>
-      <span>Prioridad</span>
-      <span>Tiempo</span>
-      <span>Etiquetas</span>
-      <span></span> </div>
+    <div class="list-header" id="list-header">
+      </div>
   </div>
 
   <script>
@@ -480,6 +482,18 @@
     ];
 
     const availableAssignees = ['Victor', 'Ana', 'Luis', 'Carlos', 'Elena', 'Equipo', 'Sin asignar'];
+
+    // Define las columnas y su orden inicial
+    let listColumns = [
+        { key: 'title', label: 'Tarea', width: '2fr' },
+        { key: 'startDate', label: 'Inicio', width: '1fr' },
+        { key: 'endDate', label: 'Fin', width: '1fr' },
+        { key: 'assignee', label: 'Colaboradores', width: '1fr' },
+        { key: 'priority', label: 'Prioridad', width: '0.8fr' },
+        { key: 'time', label: 'Tiempo', width: '1.2fr' },
+        { key: 'tags', label: 'Etiquetas', width: '1.5fr' },
+        { key: 'actions', label: '', width: '0.5fr' }
+    ];
 
     // --- Lógica de Vistas y Renderizado ---
     const kanbanContainer = document.getElementById('kanban-container');
@@ -496,7 +510,7 @@
         listBtn.classList.remove('active');
         renderKanban();
       } else if (view === 'list') {
-        kanbanContainer.style.display = 'none';
+        kanbanContainer.style.display = 'block';
         listContainer.style.display = 'block';
         kanbanBtn.classList.remove('active');
         listBtn.classList.add('active');
@@ -567,7 +581,29 @@
     }
 
     function renderList() {
+      const listHeader = document.getElementById('list-header');
+      listHeader.innerHTML = ''; // Limpia el encabezado anterior
       listContainer.querySelectorAll('.list-group').forEach(group => group.remove());
+
+      // Define la plantilla de columnas y sus anchos
+      const gridTemplateColumns = listColumns.map(col => col.width).join(' ');
+      listHeader.style.gridTemplateColumns = gridTemplateColumns;
+
+      // Renderiza los encabezados arrastrables
+      listColumns.forEach(col => {
+        const headerCell = document.createElement('span');
+        headerCell.className = 'header-cell';
+        headerCell.textContent = col.label;
+        headerCell.setAttribute('draggable', col.key !== 'title' && col.key !== 'actions');
+        headerCell.setAttribute('data-column-key', col.key);
+        if (col.key !== 'title' && col.key !== 'actions') {
+          headerCell.addEventListener('dragstart', dragColumn);
+          headerCell.addEventListener('dragover', allowDropColumn);
+          headerCell.addEventListener('drop', dropColumn);
+        }
+        listHeader.appendChild(headerCell);
+      });
+
       const groups = tasks.reduce((acc, task) => {
         (acc[task.status] = acc[task.status] || []).push(task);
         return acc;
@@ -586,41 +622,125 @@
         groups[status].forEach(task => {
           const taskEl = document.createElement('div');
           taskEl.className = 'list-task';
-          taskEl.innerHTML = `
-            <div class="task-title">
-              <input type="checkbox" ${task.status === 'hecho' ? 'checked' : ''} onclick="updateTaskStatus(this, '${task.id}')"/>
-              <span contenteditable="true" onblur="updateTaskProperty(this, '${task.id}', 'title')">${task.title}</span>
-            </div>
-            <span><input type="date" class="date-input" value="${task.startDate}" onchange="updateTaskProperty(this, '${task.id}', 'startDate')"></span>
-            <span><input type="date" class="date-input" value="${task.endDate}" onchange="updateTaskProperty(this, '${task.id}', 'endDate')"></span>
-            <div class="assignee-dropdown-container">
-                <span class="current-assignee">${task.assignee}</span>
-                <div class="assignee-dropdown-content">
-                    ${availableAssignees.map(a => `<span onclick="updateTaskProperty(this, '${task.id}', 'assignee', '${a}')">${a}</span>`).join('')}
-                </div>
-            </div>
-            <div><span class="priority-badge ${task.priority.toLowerCase()}">${task.priority}</span></div>
-            <div>
-                <input type="number" class="time-input" placeholder="Est." value="${task.estimatedTime}" onchange="updateTaskProperty(this, '${task.id}', 'estimatedTime')">h /
-                <input type="number" class="time-input" placeholder="Reg." value="${task.loggedTime}" onchange="updateTaskProperty(this, '${task.id}', 'loggedTime')">h
-            </div>
-            <div>
-                <div class="tags-container">
-                    ${task.tags.map(tag => `<span class="tag-badge" onclick="removeTag('${task.id}', '${tag}')">${tag} <span class="remove-tag">×</span></span>`).join('')}
-                    <input type="text" class="tags-input" placeholder="Añadir..."
-                           onkeypress="if(event.key === 'Enter') addTag(this, '${task.id}');"
-                           onblur="addTag(this, '${task.id}', true)">
-                </div>
-            </div>
-            <span><button class="delete-task-btn" onclick="deleteTask('${task.id}')">×</button></span>
-          `;
+          taskEl.style.gridTemplateColumns = gridTemplateColumns;
+
+          // Renderiza las celdas de la tarea según el orden de las columnas
+          listColumns.forEach(col => {
+            const cell = document.createElement('div');
+            cell.className = 'cell';
+            cell.setAttribute('data-column-key', col.key);
+
+            let cellContent = '';
+
+            switch(col.key) {
+              case 'title':
+                cellContent = `
+                  <div class="task-title">
+                    <input type="checkbox" ${task.status === 'hecho' ? 'checked' : ''} onclick="updateTaskStatus(this, '${task.id}')"/>
+                    <span contenteditable="true" onblur="updateTaskProperty(this, '${task.id}', 'title')">${task.title}</span>
+                  </div>
+                `;
+                break;
+              case 'startDate':
+                cellContent = `<span><input type="date" class="date-input" value="${task.startDate}" onchange="updateTaskProperty(this, '${task.id}', 'startDate')"></span>`;
+                break;
+              case 'endDate':
+                cellContent = `<span><input type="date" class="date-input" value="${task.endDate}" onchange="updateTaskProperty(this, '${task.id}', 'endDate')"></span>`;
+                break;
+              case 'assignee':
+                cellContent = `
+                  <div class="assignee-dropdown-container">
+                      <span class="current-assignee">${task.assignee}</span>
+                      <div class="assignee-dropdown-content">
+                          ${availableAssignees.map(a => `<span onclick="updateTaskProperty(this, '${task.id}', 'assignee', '${a}')">${a}</span>`).join('')}
+                      </div>
+                  </div>
+                `;
+                break;
+              case 'priority':
+                cellContent = `<div><span class="priority-badge ${task.priority.toLowerCase()}">${task.priority}</span></div>`;
+                break;
+              case 'time':
+                cellContent = `
+                  <div>
+                      <input type="number" class="time-input" placeholder="Est." value="${task.estimatedTime}" onchange="updateTaskProperty(this, '${task.id}', 'estimatedTime')">h /
+                      <input type="number" class="time-input" placeholder="Reg." value="${task.loggedTime}" onchange="updateTaskProperty(this, '${task.id}', 'loggedTime')">h
+                  </div>
+                `;
+                break;
+              case 'tags':
+                cellContent = `
+                  <div class="tags-container">
+                      ${task.tags.map(tag => `<span class="tag-badge" onclick="removeTag('${task.id}', '${tag}')">${tag} <span class="remove-tag">×</span></span>`).join('')}
+                      <input type="text" class="tags-input" placeholder="Añadir..."
+                             onkeypress="if(event.key === 'Enter') addTag(this, '${task.id}');"
+                             onblur="addTag(this, '${task.id}', true)">
+                  </div>
+                `;
+                break;
+              case 'actions':
+                cellContent = `<span><button class="delete-task-btn" onclick="deleteTask('${task.id}')">×</button></span>`;
+                break;
+            }
+            cell.innerHTML = cellContent;
+            taskEl.appendChild(cell);
+          });
+
           groupEl.appendChild(taskEl);
         });
         listContainer.appendChild(groupEl);
       }
     }
 
-    // --- Funciones de Lógica ---
+    // --- Funciones de Drag and Drop de Columnas ---
+    let draggedColumn = null;
+
+    function dragColumn(ev) {
+        draggedColumn = ev.target.closest('.header-cell');
+        ev.dataTransfer.setData('text/plain', draggedColumn.dataset.columnKey);
+        //ev.dataTransfer.effectAllowed = 'move';
+    }
+
+    function allowDropColumn(ev) {
+        ev.preventDefault();
+    }
+
+    function dropColumn(ev) {
+        ev.preventDefault();
+        const droppedKey = ev.dataTransfer.getData('text/plain');
+        const droppedCell = ev.target.closest('.header-cell');
+        const newOrder = Array.from(document.querySelectorAll('.header-cell')).map(cell => cell.dataset.columnKey);
+
+        const fromIndex = newOrder.indexOf(draggedColumn.dataset.columnKey);
+        const toIndex = newOrder.indexOf(droppedCell.dataset.columnKey);
+
+        if (fromIndex !== -1 && toIndex !== -1 && fromIndex !== toIndex) {
+            const [movedColumn] = listColumns.splice(fromIndex, 1);
+            listColumns.splice(toIndex, 0, movedColumn);
+            saveColumnOrder(); // Guarda el nuevo orden
+            renderList();      // Vuelve a renderizar la lista con el nuevo orden
+        }
+    }
+
+    // --- Funciones de Drag and Drop de Tareas (Kanban) ---
+    function allowDrop(ev) { ev.preventDefault(); }
+    function drag(ev) { ev.dataTransfer.setData("text/plain", ev.target.id); }
+
+    function drop(ev) {
+      ev.preventDefault();
+      const data = ev.dataTransfer.getData("text/plain");
+      const taskElement = document.getElementById(data);
+      const targetColumn = ev.target.closest('.column');
+      if (targetColumn) {
+        const task = tasks.find(t => t.id === data);
+        if (task) { task.status = targetColumn.dataset.status; }
+        const addTaskBtn = targetColumn.querySelector('.add-task-btn');
+        targetColumn.insertBefore(taskElement, addTaskBtn);
+        saveTasks();
+      }
+    }
+
+    // --- Lógica de la aplicación (igual que antes) ---
     function addTask(status) {
       const newTask = {
         id: `task-${Date.now()}`,
@@ -699,24 +819,6 @@
       }
     }
 
-    // --- Funciones de Drag and Drop ---
-    function allowDrop(ev) { ev.preventDefault(); }
-    function drag(ev) { ev.dataTransfer.setData("text/plain", ev.target.id); }
-
-    function drop(ev) {
-      ev.preventDefault();
-      const data = ev.dataTransfer.getData("text/plain");
-      const taskElement = document.getElementById(data);
-      const targetColumn = ev.target.closest('.column');
-      if (targetColumn) {
-        const task = tasks.find(t => t.id === data);
-        if (task) { task.status = targetColumn.dataset.status; }
-        const addTaskBtn = targetColumn.querySelector('.add-task-btn');
-        targetColumn.insertBefore(taskElement, addTaskBtn);
-        saveTasks();
-      }
-    }
-
     // --- Persistencia de Datos con LocalStorage ---
     function saveTasks() { localStorage.setItem('tasks', JSON.stringify(tasks)); }
     function loadTasks() {
@@ -724,9 +826,16 @@
       if (storedTasks) { tasks = JSON.parse(storedTasks); }
     }
 
+    function saveColumnOrder() { localStorage.setItem('listColumns', JSON.stringify(listColumns)); }
+    function loadColumnOrder() {
+        const storedOrder = localStorage.getItem('listColumns');
+        if (storedOrder) { listColumns = JSON.parse(storedOrder); }
+    }
+
     // Inicializar al cargar la página
     document.addEventListener('DOMContentLoaded', () => {
       loadTasks();
+      loadColumnOrder(); // Carga el orden de las columnas guardado
       const lastView = localStorage.getItem('currentView') || 'kanban';
       setView(lastView);
     });
