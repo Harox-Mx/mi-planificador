@@ -5,29 +5,43 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Tablero de Productividad Avanzado</title>
   <style>
+    /* Estilos globales y variables CSS */
     :root {
-      --primary-color: #007bff;
-      --secondary-color: #6c757d;
-      --background-color: #f8f9fa;
+      --font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+      --background-color: #f5f6f8;
       --surface-color: #ffffff;
-      --border-color: #e9ecef;
+      --card-bg-color: #ffffff;
+      --border-color: #e0e4e8;
       --shadow-color: rgba(0,0,0,0.05);
-      --text-color: #343a40;
+      --text-color: #333d47;
+      --text-muted-color: #8c98a5;
+
+      --primary-color: #5d6afe; /* Inspirado en Notion/Asana */
+      --primary-hover-color: #4a54d6;
+      
+      --priority-high: #e74c3c;
+      --priority-medium: #f1c40f;
+      --priority-low: #2ecc71;
+
+      --tag-bg-color: #e6f7ff;
+      --tag-text-color: #00619a;
     }
 
     body {
-      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-family: var(--font-family);
       background: var(--background-color);
       margin: 0;
-      padding: 20px;
+      padding: 30px;
       color: var(--text-color);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
     
     h1 {
       text-align: center;
-      margin-bottom: 30px;
+      margin-bottom: 40px;
       color: #2c3e50;
-      font-weight: 300;
+      font-weight: 600;
       font-size: 2.5rem;
     }
 
@@ -36,15 +50,18 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 10px 20px;
+      padding: 12px 25px;
       background: var(--surface-color);
-      border-radius: 8px;
-      box-shadow: 0 2px 10px var(--shadow-color);
-      margin-bottom: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px var(--shadow-color);
+      margin-bottom: 30px;
     }
     .header-nav .view-tabs {
       display: flex;
       gap: 5px;
+      background: #f0f2f5;
+      border-radius: 8px;
+      padding: 4px;
     }
     .header-nav .view-tabs button {
       padding: 10px 18px;
@@ -53,29 +70,30 @@
       border-radius: 6px;
       cursor: pointer;
       font-weight: 600;
-      color: var(--secondary-color);
+      color: var(--text-color);
       transition: all 0.2s ease;
     }
     .header-nav .view-tabs button:hover {
-        background: var(--border-color);
+        background: #e0e4e8;
     }
     .header-nav .view-tabs button.active {
       background: var(--primary-color);
       color: #fff;
-      box-shadow: 0 2px 5px rgba(0, 123, 255, 0.2);
+      box-shadow: 0 2px 5px rgba(93, 106, 254, 0.3);
     }
     .add-global-task-btn {
         padding: 10px 20px;
-        background: #28a745;
+        background: var(--primary-color);
         color: #fff;
         border: none;
-        border-radius: 6px;
+        border-radius: 8px;
         cursor: pointer;
         font-weight: 600;
         transition: background 0.2s ease;
+        box-shadow: 0 4px 10px rgba(93, 106, 254, 0.2);
     }
     .add-global-task-btn:hover {
-        background: #218838;
+        background: var(--primary-hover-color);
     }
 
     /* --- Estilos del Tablero (Kanban) --- */
@@ -86,35 +104,35 @@
       flex-wrap: wrap;
     }
     .column {
-      background: #e9ecef;
+      background: var(--background-color);
       padding: 15px;
-      border-radius: 10px;
+      border-radius: 12px;
       width: 320px;
       min-height: 500px;
-      box-shadow: 0 4px 10px var(--shadow-color);
+      box-shadow: 0 4px 15px var(--shadow-color);
       transition: box-shadow 0.3s ease;
       position: relative;
       display: flex;
       flex-direction: column;
     }
     .column:hover {
-      box-shadow: 0 6px 14px rgba(0,0,0,0.1);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.08);
     }
     .column h2 {
       text-align: center;
       margin: 0 0 15px;
-      color: #2c3e50;
+      color: var(--text-color);
       font-weight: 600;
-      font-size: 1.3rem;
+      font-size: 1.2rem;
     }
     .task {
-      background: var(--surface-color);
+      background: var(--card-bg-color);
       margin: 8px 0;
       padding: 15px;
-      border-radius: 8px;
+      border-radius: 10px;
       display: flex;
       flex-direction: column;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
       transition: transform 0.2s ease, box-shadow 0.2s ease, border-left 0.3s ease;
       cursor: grab;
       border-left: 5px solid transparent;
@@ -122,11 +140,11 @@
     }
     .task:active {
       transform: scale(1.02);
-      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
-    .task[data-priority="Alta"] { border-left-color: #e74c3c; }
-    .task[data-priority="Media"] { border-left-color: #f1c40f; }
-    .task[data-priority="Baja"] { border-left-color: #2ecc71; }
+    .task[data-priority="Alta"] { border-left-color: var(--priority-high); }
+    .task[data-priority="Media"] { border-left-color: var(--priority-medium); }
+    .task[data-priority="Baja"] { border-left-color: var(--priority-low); }
 
     .task-content {
       flex: 1;
@@ -135,7 +153,7 @@
     .task-content h3 {
       margin: 0 0 6px;
       font-size: 1.1rem;
-      color: #2c3e50;
+      color: var(--text-color);
       font-weight: 600;
     }
     .task-meta {
@@ -143,26 +161,34 @@
       grid-template-columns: 1fr 1fr;
       gap: 10px;
       font-size: 0.85em;
-      color: #555;
+      color: var(--text-muted-color);
     }
-    .task-meta div, .task-meta select, .task-meta input {
-      padding: 6px 8px;
-      border-radius: 4px;
+    .task-meta .meta-item {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+    .task-meta .meta-item svg {
+        fill: var(--text-muted-color);
+        width: 16px;
+        height: 16px;
+    }
+    .task-meta input, .task-meta select {
       border: 1px solid var(--border-color);
-      background: #f0f4f7;
+      border-radius: 6px;
+      padding: 6px 8px;
       font-size: 0.8em;
       box-sizing: border-box;
       width: 100%;
-    }
-    .task-meta input[type="date"], .task-meta input[type="number"] {
-      cursor: pointer;
+      background: #f9fafc;
+      color: var(--text-color);
     }
     .task-meta select {
         cursor: pointer;
         -webkit-appearance: none;
         -moz-appearance: none;
         appearance: none;
-        background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%236c757d%22%20d%3D%22M287%2C197.3L159.2%2C69.5c-3.1-3.1-8.2-3.1-11.3%2C0L1.5%2C197.3c-3.1%2C3.1-3.1%2C8.2%2C0%2C11.3l19.5%2C19.5c3.1%2C3.1%2C8.2%2C3.1%2C11.3%2C0L145.7%2C101.9c3.1-3.1%2C8.2-3.1%2C11.3%2C0l113.1%2C113.1c3.1%2C3.1%2C8.2%2C3.1%2C11.3%2C0l19.5-19.5C290.1%2C205.5%2C290.1%2C200.4%2C287%2C197.3z%22%2F%3E%3C%2Fsvg%3E');
+        background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%238c98a5%22%20d%3D%22M287%2C197.3L159.2%2C69.5c-3.1-3.1-8.2-3.1-11.3%2C0L1.5%2C197.3c-3.1%2C3.1-3.1%2C8.2%2C0%2C11.3l19.5%2C19.5c3.1%2C3.1%2C8.2%2C3.1%2C11.3%2C0L145.7%2C101.9c3.1-3.1%2C8.2-3.1%2C11.3%2C0l113.1%2C113.1c3.1%2C3.1%2C8.2%2C3.1%2C11.3%2C0l19.5-19.5C290.1%2C205.5%2C290.1%2C200.4%2C287%2C197.3z%22%2F%3E%3C%2Fsvg%3E');
         background-repeat: no-repeat;
         background-position: right 8px center;
         background-size: 10px;
@@ -171,21 +197,33 @@
     .task-tags {
         grid-column: span 2;
         margin-top: 5px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+    }
+    .tag-badge {
+        background: var(--tag-bg-color);
+        color: var(--tag-text-color);
+        border-radius: 5px;
+        padding: 4px 8px;
+        font-size: 0.75em;
+        font-weight: 500;
+        white-space: nowrap;
     }
     .add-task-btn {
       width: 100%;
       padding: 12px;
       margin-top: auto;
-      border: 2px dashed #b8c4d3;
-      background: #e9eef2;
+      border: 2px dashed var(--border-color);
+      background: transparent;
       border-radius: 8px;
       cursor: pointer;
-      color: #7a838d;
-      transition: background 0.2s ease, color 0.2s ease;
+      color: var(--text-muted-color);
+      transition: all 0.2s ease;
     }
     .add-task-btn:hover {
-      background: #dce3eb;
-      color: #5d6773;
+      background: #e9eef2;
+      border-color: #c0c6cc;
     }
 
     /* --- Estilos de la Vista de Lista --- */
@@ -194,17 +232,18 @@
       max-width: 1200px;
       margin: 0 auto;
       background: var(--surface-color);
-      border-radius: 10px;
+      border-radius: 12px;
       padding: 20px;
-      box-shadow: 0 4px 10px var(--shadow-color);
+      box-shadow: 0 4px 15px var(--shadow-color);
     }
     .list-header {
       display: grid;
-      grid-template-columns: 2fr 1fr 1fr 1fr 0.8fr 1.2fr 1.5fr; /* Nuevas columnas */
+      grid-template-columns: 2fr 1fr 1fr 1fr 0.8fr 1.2fr 1.5fr 0.5fr; /* Columna para el checkbox */
       padding: 10px 0;
       font-weight: 600;
       border-bottom: 2px solid var(--border-color);
-      color: var(--secondary-color);
+      color: var(--text-muted-color);
+      font-size: 0.9rem;
     }
     .list-header span:not(:first-child) {
         text-align: center;
@@ -213,20 +252,20 @@
       font-size: 1.2rem;
       font-weight: 600;
       padding: 20px 0 10px;
-      color: #2c3e50;
+      color: var(--text-color);
       border-bottom: 1px solid var(--border-color);
       margin-bottom: 10px;
     }
     .list-task {
       display: grid;
-      grid-template-columns: 2fr 1fr 1fr 1fr 0.8fr 1.2fr 1.5fr;
+      grid-template-columns: 2fr 1fr 1fr 1fr 0.8fr 1.2fr 1.5fr 0.5fr;
       align-items: center;
       padding: 12px 0;
       border-bottom: 1px solid var(--border-color);
       transition: background 0.2s ease;
     }
     .list-task:hover {
-        background: #f4f6f8;
+        background: #f9fafc;
     }
     .list-task span, .list-task div {
       padding: 0 10px;
@@ -245,6 +284,12 @@
     .list-task .task-title span {
         padding: 0;
     }
+    .list-task .task-title span[contenteditable]:hover {
+        background-color: #f0f2f5;
+        border-radius: 4px;
+        cursor: text;
+    }
+
     .priority-badge {
       padding: 4px 10px;
       border-radius: 20px;
@@ -254,18 +299,28 @@
       display: inline-block;
       text-align: center;
     }
-    .priority-badge.alta { background: #e74c3c; }
-    .priority-badge.media { background: #f1c40f; }
-    .priority-badge.baja { background: #2ecc71; }
-    
-    .list-task input.text-input, .list-task input.date-input {
+    .priority-badge.alta { background: var(--priority-high); }
+    .priority-badge.media { background: var(--priority-medium); }
+    .priority-badge.baja { background: var(--priority-low); }
+
+    .list-task input[type="text"], .list-task input[type="date"] {
         border: 1px solid var(--border-color);
-        border-radius: 4px;
-        padding: 5px;
+        border-radius: 6px;
+        padding: 6px;
         font-size: 0.9em;
         width: 90%;
         text-align: center;
+        background: #f9fafc;
     }
+    .list-task input:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 2px rgba(93, 106, 254, 0.2);
+    }
+    .list-task input[type="date"]::-webkit-calendar-picker-indicator {
+      cursor: pointer;
+    }
+    
     .list-task .assignee-dropdown-container {
         position: relative;
         display: inline-block;
@@ -274,43 +329,44 @@
     .list-task .assignee-dropdown-container .current-assignee {
         cursor: pointer;
         color: var(--primary-color);
-        text-decoration: underline;
+        font-weight: 500;
     }
     .list-task .assignee-dropdown-content {
         display: none;
         position: absolute;
         background-color: var(--surface-color);
         min-width: 160px;
-        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.1);
         z-index: 100;
-        border-radius: 5px;
+        border-radius: 8px;
         left: 50%;
         transform: translateX(-50%);
         top: 100%;
         margin-top: 5px;
+        border: 1px solid var(--border-color);
+        padding: 5px 0;
     }
     .list-task .assignee-dropdown-content span {
         color: var(--text-color);
-        padding: 8px 12px;
-        text-decoration: none;
+        padding: 8px 15px;
         display: block;
         cursor: pointer;
         text-align: left;
+        font-size: 0.9em;
+        transition: background 0.2s ease;
     }
     .list-task .assignee-dropdown-content span:hover {
-        background-color: var(--border-color);
+        background-color: #f0f2f5;
     }
-    .list-task .assignee-dropdown-container:hover .assignee-dropdown-content {
-        display: block;
-    }
+
     .list-task .tags-container {
         display: flex;
         flex-wrap: wrap;
         gap: 5px;
     }
     .list-task .tag-badge {
-        background: #d1ecf1;
-        color: #0c5460;
+        background: var(--tag-bg-color);
+        color: var(--tag-text-color);
         border-radius: 5px;
         padding: 4px 8px;
         font-size: 0.75em;
@@ -319,47 +375,85 @@
         transition: background 0.2s ease;
     }
     .list-task .tag-badge:hover {
-        background: #bee5eb;
+        background: #d4ecf9;
     }
     .list-task .tag-badge .remove-tag {
         margin-left: 5px;
         font-weight: bold;
-        color: #0c5460;
+        color: var(--tag-text-color);
     }
     .list-task .tags-input {
         border: 1px solid var(--border-color);
-        border-radius: 4px;
-        padding: 5px;
+        border-radius: 6px;
+        padding: 6px;
         font-size: 0.8em;
         width: 100%;
         box-sizing: border-box;
+        background: #f9fafc;
+    }
+    .list-task .delete-task-btn {
+        background: #e74c3c;
+        color: #fff;
+        border: none;
+        border-radius: 50%;
+        width: 25px;
+        height: 25px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background 0.2s ease;
+        line-height: 1;
+        text-align: center;
+        padding: 0;
+        margin: 0 auto;
+        display: block;
+    }
+    .list-task .delete-task-btn:hover {
+        background: #c0392b;
     }
     
   </style>
 </head>
 <body>
+  <h1>Gestión de Proyectos</h1>
+  
   <div class="header-nav">
     <div class="view-tabs">
-      <button id="tablero-btn" class="active" onclick="setView('kanban')">Tablero</button>
-      <button id="lista-btn" onclick="setView('list')">Lista</button>
-      <button onclick="alert('Funcionalidad de Calendario en desarrollo')">Calendario</button>
-      <button onclick="alert('Funcionalidad de Archivos en desarrollo')">Archivos</button>
+      <button id="tablero-btn" class="active" onclick="setView('kanban')">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-trello"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><rect x="7" y="7" width="3" height="9"></rect><rect x="14" y="7" width="3" height="5"></rect></svg>
+          Tablero
+      </button>
+      <button id="lista-btn" onclick="setView('list')">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-list"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+          Lista
+      </button>
     </div>
-    <button class="add-global-task-btn" onclick="addTask('por-hacer')">+ Agregar tarea</button>
+    <button class="add-global-task-btn" onclick="addTask('por-hacer')">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-plus"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+        Agregar tarea
+    </button>
   </div>
 
   <div id="kanban-container" class="board-view">
     <div class="column" data-status="por-hacer" ondrop="drop(event)" ondragover="allowDrop(event)">
       <h2>Por hacer</h2>
-      <button class="add-task-btn" onclick="addTask('por-hacer')">+ Agregar tarea</button>
+      <button class="add-task-btn" onclick="addTask('por-hacer')">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-plus"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          Añadir tarea
+      </button>
     </div>
     <div class="column" data-status="en-progreso" ondrop="drop(event)" ondragover="allowDrop(event)">
       <h2>En progreso</h2>
-      <button class="add-task-btn" onclick="addTask('en-progreso')">+ Agregar tarea</button>
+      <button class="add-task-btn" onclick="addTask('en-progreso')">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-plus"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          Añadir tarea
+      </button>
     </div>
     <div class="column" data-status="hecho" ondrop="drop(event)" ondragover="allowDrop(event)">
       <h2>Hecho</h2>
-      <button class="add-task-btn" onclick="addTask('hecho')">+ Agregar tarea</button>
+      <button class="add-task-btn" onclick="addTask('hecho')">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-plus"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          Añadir tarea
+      </button>
     </div>
   </div>
 
@@ -372,16 +466,16 @@
       <span>Prioridad</span>
       <span>Tiempo</span>
       <span>Etiquetas</span>
-    </div>
+      <span></span> </div>
   </div>
 
   <script>
     // --- Modelo de Datos ---
     let tasks = [
-      { id: 'task-1', title: 'Diseñar UI', status: 'por-hacer', priority: 'Alta', assignee: 'Victor', startDate: '2025-08-10', endDate: '2025-08-30', estimatedTime: 8, loggedTime: 2, tags: ['Diseño'] },
+      { id: 'task-1', title: 'Diseñar UI', status: 'por-hacer', priority: 'Alta', assignee: 'Victor', startDate: '2025-08-10', endDate: '2025-08-30', estimatedTime: 8, loggedTime: 2, tags: ['Diseño', 'Frontend'] },
       { id: 'task-2', title: 'Definir MVP', status: 'por-hacer', priority: 'Media', assignee: 'Victor', startDate: '2025-08-08', endDate: '2025-09-05', estimatedTime: 4, loggedTime: 1, tags: ['Producto'] },
-      { id: 'task-3', title: 'Implementar login', status: 'en-progreso', priority: 'Alta', assignee: 'Ana', startDate: '2025-08-15', endDate: '2025-08-25', estimatedTime: 12, loggedTime: 6, tags: ['Desarrollo', 'Frontend'] },
-      { id: 'task-4', title: 'Reunión de seguimiento', status: 'por-hacer', priority: 'Baja', assignee: 'Equipo', startDate: '2025-08-13', endDate: '2025-08-15', estimatedTime: 1, loggedTime: 0, tags: [] },
+      { id: 'task-3', title: 'Implementar login', status: 'en-progreso', priority: 'Alta', assignee: 'Ana', startDate: '2025-08-15', endDate: '2025-08-25', estimatedTime: 12, loggedTime: 6, tags: ['Desarrollo', 'Backend'] },
+      { id: 'task-4', title: 'Reunión de seguimiento', status: 'por-hacer', priority: 'Baja', assignee: 'Equipo', startDate: '2025-08-13', endDate: '2025-08-15', estimatedTime: 1, loggedTime: 0, tags: ['Reunión'] },
       { id: 'task-5', title: 'Documentación técnica', status: 'hecho', priority: 'Baja', assignee: 'Luis', startDate: '2025-08-05', endDate: '2025-08-10', estimatedTime: 5, loggedTime: 5, tags: ['Documentación'] }
     ];
 
@@ -431,28 +525,29 @@
             <h3 contenteditable="true" onblur="updateTaskProperty(this, '${task.id}', 'title')">${task.title}</h3>
           </div>
           <div class="task-meta">
-            <div>
-                <select onchange="updateTaskProperty(this, '${task.id}', 'priority')">
-                    ${priorityOptions}
-                </select>
-            </div>
-            <div>
+            <div class="meta-item">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-user"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
                 <select onchange="updateTaskProperty(this, '${task.id}', 'assignee')">
                     ${assigneeOptions}
                 </select>
             </div>
-            <div>
-                <label>Inicio:</label>
-                <input type="date" value="${task.startDate}" onchange="updateTaskProperty(this, '${task.id}', 'startDate')">
+            <div class="meta-item">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-flag"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path><line x1="4" y1="22" x2="4" y2="15"></line></svg>
+                <select onchange="updateTaskProperty(this, '${task.id}', 'priority')">
+                    ${priorityOptions}
+                </select>
             </div>
-            <div>
-                <label>Fin:</label>
+            <div class="meta-item" style="grid-column: span 2;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-calendar"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                <input type="date" value="${task.startDate}" onchange="updateTaskProperty(this, '${task.id}', 'startDate')">
+                -
                 <input type="date" value="${task.endDate}" onchange="updateTaskProperty(this, '${task.id}', 'endDate')">
             </div>
-            <div style="grid-column: span 2;">
-                <label>Tiempo:</label>
-                <input type="number" placeholder="Est. (horas)" value="${task.estimatedTime}" onchange="updateTaskProperty(this, '${task.id}', 'estimatedTime')">
-                <input type="number" placeholder="Reg. (horas)" value="${task.loggedTime}" onchange="updateTaskProperty(this, '${task.id}', 'loggedTime')">
+            <div class="meta-item" style="grid-column: span 2;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-clock"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                <input type="number" placeholder="Est. (h)" value="${task.estimatedTime}" onchange="updateTaskProperty(this, '${task.id}', 'estimatedTime')">
+                /
+                <input type="number" placeholder="Reg. (h)" value="${task.loggedTime}" onchange="updateTaskProperty(this, '${task.id}', 'loggedTime')">
             </div>
             ${task.tags && task.tags.length > 0 ? `
                 <div class="task-tags" style="grid-column: span 2;">
@@ -496,8 +591,8 @@
               <input type="checkbox" ${task.status === 'hecho' ? 'checked' : ''} onclick="updateTaskStatus(this, '${task.id}')"/>
               <span contenteditable="true" onblur="updateTaskProperty(this, '${task.id}', 'title')">${task.title}</span>
             </div>
-            <span><input type="date" value="${task.startDate}" onchange="updateTaskProperty(this, '${task.id}', 'startDate')"></span>
-            <span><input type="date" value="${task.endDate}" onchange="updateTaskProperty(this, '${task.id}', 'endDate')"></span>
+            <span><input type="date" class="date-input" value="${task.startDate}" onchange="updateTaskProperty(this, '${task.id}', 'startDate')"></span>
+            <span><input type="date" class="date-input" value="${task.endDate}" onchange="updateTaskProperty(this, '${task.id}', 'endDate')"></span>
             <div class="assignee-dropdown-container">
                 <span class="current-assignee">${task.assignee}</span>
                 <div class="assignee-dropdown-content">
@@ -505,7 +600,10 @@
                 </div>
             </div>
             <div><span class="priority-badge ${task.priority.toLowerCase()}">${task.priority}</span></div>
-            <div>${task.estimatedTime}h/${task.loggedTime}h</div>
+            <div>
+                <input type="number" class="time-input" placeholder="Est." value="${task.estimatedTime}" onchange="updateTaskProperty(this, '${task.id}', 'estimatedTime')">h /
+                <input type="number" class="time-input" placeholder="Reg." value="${task.loggedTime}" onchange="updateTaskProperty(this, '${task.id}', 'loggedTime')">h
+            </div>
             <div>
                 <div class="tags-container">
                     ${task.tags.map(tag => `<span class="tag-badge" onclick="removeTag('${task.id}', '${tag}')">${tag} <span class="remove-tag">×</span></span>`).join('')}
@@ -514,6 +612,7 @@
                            onblur="addTag(this, '${task.id}', true)">
                 </div>
             </div>
+            <span><button class="delete-task-btn" onclick="deleteTask('${task.id}')">×</button></span>
           `;
           groupEl.appendChild(taskEl);
         });
@@ -539,6 +638,15 @@
       tasks.push(newTask);
       const currentView = localStorage.getItem('currentView') || 'kanban';
       setView(currentView);
+    }
+    
+    function deleteTask(taskId) {
+      if (confirm('¿Estás seguro de que quieres eliminar esta tarea?')) {
+        tasks = tasks.filter(task => task.id !== taskId);
+        saveTasks();
+        const currentView = localStorage.getItem('currentView') || 'kanban';
+        setView(currentView);
+      }
     }
     
     function updateTaskProperty(element, taskId, property, value = null) {
