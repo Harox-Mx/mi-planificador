@@ -15,7 +15,36 @@
       text-align: center;
       margin-bottom: 30px;
     }
-    .board {
+    
+    /* --- Estilos del menú de navegación --- */
+    .header-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid #ccc;
+      margin-bottom: 20px;
+    }
+    .header-nav .view-tabs {
+      display: flex;
+      gap: 10px;
+    }
+    .header-nav .view-tabs button {
+      padding: 8px 15px;
+      border: none;
+      background: #e0e0e0;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background 0.2s ease;
+    }
+    .header-nav .view-tabs button.active {
+      background: #007bff;
+      color: #fff;
+    }
+
+    /* --- Estilos del Tablero (Kanban) --- */
+    .board-view {
       display: flex;
       gap: 20px;
       justify-content: center;
@@ -29,9 +58,6 @@
       box-shadow: 0 4px 10px rgba(0,0,0,0.1);
       transition: box-shadow 0.3s ease;
       position: relative;
-    }
-    .column:hover {
-      box-shadow: 0 6px 14px rgba(0,0,0,0.15);
     }
     .column h2 {
       text-align: center;
@@ -51,49 +77,12 @@
       border-left: 5px solid transparent;
       position: relative;
     }
-    .task:active {
-      transform: scale(1.02);
-    }
-    /* Indicadores de prioridad */
-    .task[data-priority="Alta"] { border-left-color: #e74c3c; } /* Rojo */
-    .task[data-priority="Media"] { border-left-color: #f1c40f; } /* Amarillo */
-    .task[data-priority="Baja"] { border-left-color: #2ecc71; } /* Verde */
-
-    .task-content {
-      flex: 1;
-    }
-    .task-content h3 {
+    .task[data-priority="Alta"] { border-left-color: #e74c3c; }
+    .task[data-priority="Media"] { border-left-color: #f1c40f; }
+    .task[data-priority="Baja"] { border-left-color: #2ecc71; }
+    .task h3 {
       margin: 0 0 6px;
       font-size: 1.1em;
-    }
-    .subtasks-container {
-      margin-top: 8px;
-    }
-    .subtasks-container label {
-      display: block;
-      font-size: 0.9em;
-      margin-bottom: 4px;
-    }
-    .subtasks-container input[type="checkbox"]:checked + span {
-      text-decoration: line-through;
-      color: #7f8c8d;
-    }
-    .task-meta {
-      width: 100px;
-      padding-left: 10px;
-      font-size: 0.85em;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-    .task-meta div {
-      background: #f0f0f0;
-      padding: 4px;
-      border-radius: 4px;
-    }
-    .task-meta .due-date {
-      color: #e74c3c;
-      font-weight: bold;
     }
     .add-task-btn {
       width: 100%;
@@ -104,16 +93,72 @@
       border-radius: 8px;
       cursor: pointer;
       color: #7f8c8d;
-      transition: background 0.2s ease;
     }
-    .add-task-btn:hover {
-      background: #ecf0f1;
+
+    /* --- Estilos de la Vista de Lista --- */
+    .list-view {
+      display: none; /* Oculta por defecto */
+      max-width: 900px;
+      margin: 0 auto;
+      background: #fff;
+      border-radius: 10px;
+      padding: 20px;
     }
+    .list-header {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+      padding: 10px 0;
+      font-weight: bold;
+      border-bottom: 2px solid #ccc;
+    }
+    .list-group {
+      margin-top: 20px;
+    }
+    .list-group-header {
+      font-size: 1.2em;
+      font-weight: bold;
+      padding: 10px 0;
+      cursor: pointer;
+    }
+    .list-task {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid #eee;
+    }
+    .list-task span, .list-task div {
+      padding-right: 10px;
+    }
+    .list-task .task-title {
+      display: flex;
+      align-items: center;
+    }
+    .list-task .task-title input[type="checkbox"] {
+      margin-right: 10px;
+    }
+    .priority-badge {
+      padding: 4px 8px;
+      border-radius: 5px;
+      color: #fff;
+      font-size: 0.8em;
+    }
+    .priority-badge.alta { background: #e74c3c; }
+    .priority-badge.media { background: #f1c40f; }
+    .priority-badge.baja { background: #2ecc71; }
   </style>
 </head>
 <body>
-  <h1>🧠 Tablero de Productividad</h1>
-  <div class="board">
+  <div class="header-nav">
+    <div class="view-tabs">
+      <button id="tablero-btn" class="active" onclick="setView('kanban')">Tablero</button>
+      <button id="lista-btn" onclick="setView('list')">Lista</button>
+      <button onclick="alert('Funcionalidad de Calendario en desarrollo')">Calendario</button>
+    </div>
+    <button onclick="alert('Añadir tarea')">+ Agregar tarea</button>
+  </div>
+
+  <div id="kanban-container" class="board-view">
     <div class="column" data-status="por-hacer" ondrop="drop(event)" ondragover="allowDrop(event)">
       <h2>Por hacer</h2>
       <button class="add-task-btn" onclick="addTask('por-hacer')">+ Agregar tarea</button>
@@ -128,87 +173,73 @@
     </div>
   </div>
 
+  <div id="list-container" class="list-view">
+    <div class="list-header">
+      <span>Nombre</span>
+      <span>Fecha de vencimiento</span>
+      <span>Colaboradores</span>
+      <span>Prioridad</span>
+      <span>Etiquetas</span>
+    </div>
+    </div>
+
   <script>
-    // --- Modelo de Datos ---
+    // --- Modelo de Datos (Igual que antes) ---
     let tasks = [
-      {
-        id: 'task-1',
-        title: 'Diseñar UI',
-        status: 'por-hacer',
-        priority: 'Alta',
-        assignee: 'Victor',
-        dueDate: '2025-08-30',
-        subtasks: [
-          { name: 'Wireframes', completed: false },
-          { name: 'Paleta de colores', completed: true }
-        ]
-      },
-      {
-        id: 'task-2',
-        title: 'Definir MVP',
-        status: 'por-hacer',
-        priority: 'Media',
-        assignee: 'Victor',
-        dueDate: '2025-09-05',
-        subtasks: [
-          { name: 'Funciones clave', completed: false },
-          { name: 'Alcance técnico', completed: false }
-        ]
-      },
-      {
-        id: 'task-3',
-        title: 'Implementar login',
-        status: 'en-progreso',
-        priority: 'Alta',
-        assignee: 'Ana',
-        dueDate: '2025-08-25',
-        subtasks: []
-      }
+      { id: 'task-1', title: 'Diseñar UI', status: 'por-hacer', priority: 'Alta', assignee: 'Victor', dueDate: '2025-08-30', subtasks: [{ name: 'Wireframes', completed: false }] },
+      { id: 'task-2', title: 'Definir MVP', status: 'por-hacer', priority: 'Media', assignee: 'Victor', dueDate: '2025-09-05', subtasks: [] },
+      { id: 'task-3', title: 'Implementar login', status: 'en-progreso', priority: 'Alta', assignee: 'Ana', dueDate: '2025-08-25', subtasks: [] },
+      { id: 'task-4', title: 'Reunión de seguimiento', status: 'por-hacer', priority: 'Alta', assignee: 'Equipo', dueDate: '2025-08-15', subtasks: [] },
+      { id: 'task-5', title: 'Documentación técnica', status: 'hecho', priority: 'Baja', assignee: 'Luis', dueDate: '2025-08-10', subtasks: [] }
     ];
 
-    // --- Funciones de Lógica ---
-    const board = document.querySelector('.board');
+    // --- Lógica de Vistas y Renderizado ---
+    const kanbanContainer = document.getElementById('kanban-container');
+    const listContainer = document.getElementById('list-container');
+    const kanbanBtn = document.getElementById('tablero-btn');
+    const listBtn = document.getElementById('lista-btn');
 
-    // Función para renderizar todas las tareas
-    function renderTasks() {
+    function setView(view) {
+      if (view === 'kanban') {
+        kanbanContainer.style.display = 'flex';
+        listContainer.style.display = 'none';
+        kanbanBtn.classList.add('active');
+        listBtn.classList.remove('active');
+        renderKanban();
+      } else if (view === 'list') {
+        kanbanContainer.style.display = 'none';
+        listContainer.style.display = 'block';
+        kanbanBtn.classList.remove('active');
+        listBtn.classList.add('active');
+        renderList();
+      }
+    }
+
+    function renderKanban() {
       // Limpiar columnas existentes
       document.querySelectorAll('.column > .task').forEach(taskEl => taskEl.remove());
 
       tasks.forEach(task => {
-        // Crear el elemento de tarea
         const taskEl = document.createElement('div');
         taskEl.className = 'task';
         taskEl.id = task.id;
         taskEl.setAttribute('draggable', 'true');
         taskEl.setAttribute('data-priority', task.priority);
 
-        // Añadir el contenido HTML de la tarea
+        // Contenido del tablero (similar a la propuesta anterior)
         taskEl.innerHTML = `
           <div class="task-content">
             <h3 contenteditable="true" onblur="updateTaskTitle(this, '${task.id}')">${task.title}</h3>
-            ${task.subtasks.length > 0 ? `
-            <div class="subtasks-container">
-              ${task.subtasks.map(subtask => `
-                <label>
-                  <input type="checkbox" ${subtask.completed ? 'checked' : ''} onclick="toggleSubtask(this, '${task.id}', '${subtask.name}')">
-                  <span>${subtask.name}</span>
-                </label>
-              `).join('')}
             </div>
-            ` : ''}
-          </div>
           <div class="task-meta">
             <div class="priority-label">${task.priority}</div>
             <div class="assignee-label">Responsable: ${task.assignee}</div>
             <div class="due-date">Vence: ${task.dueDate}</div>
           </div>
         `;
-
-        // Asignar los eventos de drag and drop
         taskEl.addEventListener('dragstart', drag);
 
-        // Encontrar la columna correcta y agregar la tarea
-        const targetColumn = board.querySelector(`.column[data-status="${task.status}"]`);
+        const targetColumn = kanbanContainer.querySelector(`.column[data-status="${task.status}"]`);
         if (targetColumn) {
           const addTaskBtn = targetColumn.querySelector('.add-task-btn');
           targetColumn.insertBefore(taskEl, addTaskBtn);
@@ -216,10 +247,50 @@
       });
     }
 
-    // Función para agregar una nueva tarea
+    function renderList() {
+      // Limpiar la vista de lista
+      listContainer.querySelectorAll('.list-group').forEach(group => group.remove());
+
+      // Agrupar tareas por estado
+      const groups = tasks.reduce((acc, task) => {
+        (acc[task.status] = acc[task.status] || []).push(task);
+        return acc;
+      }, {});
+      
+      const statusMap = {
+        'por-hacer': 'Por hacer',
+        'en-progreso': 'En progreso',
+        'hecho': 'Hecho'
+      };
+
+      for (const status in groups) {
+        const groupEl = document.createElement('div');
+        groupEl.className = 'list-group';
+        
+        groupEl.innerHTML = `<div class="list-group-header">${statusMap[status]} (${groups[status].length})</div>`;
+
+        groups[status].forEach(task => {
+          const taskEl = document.createElement('div');
+          taskEl.className = 'list-task';
+          taskEl.innerHTML = `
+            <div class="task-title">
+              <input type="checkbox" ${task.status === 'hecho' ? 'checked' : ''} onclick="updateTaskStatus(this, '${task.id}')"/>
+              <span>${task.title}</span>
+            </div>
+            <span>${task.dueDate}</span>
+            <span>${task.assignee}</span>
+            <div><span class="priority-badge ${task.priority.toLowerCase()}">${task.priority}</span></div>
+            <span>-</span> `;
+          groupEl.appendChild(taskEl);
+        });
+        listContainer.appendChild(groupEl);
+      }
+    }
+
+    // --- Funciones de Lógica (modificadas) ---
     function addTask(status) {
       const newTask = {
-        id: `task-${Date.now()}`, // ID único
+        id: `task-${Date.now()}`,
         title: 'Nueva tarea',
         status: status,
         priority: 'Media',
@@ -228,51 +299,35 @@
         subtasks: []
       };
       tasks.push(newTask);
-      renderTasks();
+      renderKanban();
     }
-
-    // Función para actualizar el título de una tarea
+    
     function updateTaskTitle(element, taskId) {
       const task = tasks.find(t => t.id === taskId);
-      if (task) {
-        task.title = element.innerText;
-      }
+      if (task) { task.title = element.innerText; }
     }
 
-    // Función para marcar/desmarcar subtareas
-    function toggleSubtask(checkbox, taskId, subtaskName) {
+    function updateTaskStatus(checkbox, taskId) {
       const task = tasks.find(t => t.id === taskId);
       if (task) {
-        const subtask = task.subtasks.find(s => s.name === subtaskName);
-        if (subtask) {
-          subtask.completed = checkbox.checked;
-        }
+        task.status = checkbox.checked ? 'hecho' : 'por-hacer';
+        // Volvemos a renderizar la vista actual para que se actualice
+        setView(listContainer.style.display === 'block' ? 'list' : 'kanban');
       }
     }
 
-    // --- Funciones de Drag and Drop ---
-    function allowDrop(ev) {
-      ev.preventDefault();
-    }
-
-    function drag(ev) {
-      ev.dataTransfer.setData("text/plain", ev.target.id);
-    }
+    // --- Funciones de Drag and Drop (igual que antes) ---
+    function allowDrop(ev) { ev.preventDefault(); }
+    function drag(ev) { ev.dataTransfer.setData("text/plain", ev.target.id); }
 
     function drop(ev) {
       ev.preventDefault();
       const data = ev.dataTransfer.getData("text/plain");
       const taskElement = document.getElementById(data);
       const targetColumn = ev.target.closest('.column');
-
       if (targetColumn) {
-        // Encontrar la tarea en el array y actualizar su estado
         const task = tasks.find(t => t.id === data);
-        if (task) {
-          task.status = targetColumn.dataset.status;
-        }
-
-        // Mover el elemento visualmente
+        if (task) { task.status = targetColumn.dataset.status; }
         const addTaskBtn = targetColumn.querySelector('.add-task-btn');
         targetColumn.insertBefore(taskElement, addTaskBtn);
       }
@@ -280,7 +335,7 @@
 
     // Inicializar el tablero al cargar la página
     document.addEventListener('DOMContentLoaded', () => {
-      renderTasks();
+      setView('kanban'); // Inicia con la vista de tablero por defecto
     });
   </script>
 </body>
