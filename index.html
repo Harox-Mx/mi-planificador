@@ -1,157 +1,287 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>🧠 Planner tipo Asana</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Tablero de Productividad Avanzado</title>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
-      background-color: #f8f9fa;
-      padding: 40px;
-      max-width: 900px;
-      margin: auto;
+      background: #f0f2f5;
+      margin: 0;
+      padding: 20px;
     }
     h1 {
       text-align: center;
       margin-bottom: 30px;
-      color: #333;
     }
-    .day-section {
-      margin-bottom: 40px;
+    .board {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
     }
-    .day-section h2 {
-      color: #007bff;
+    .column {
+      background: #fff;
+      padding: 15px;
+      border-radius: 10px;
+      width: 320px;
+      min-height: 500px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      transition: box-shadow 0.3s ease;
+      position: relative;
+    }
+    .column:hover {
+      box-shadow: 0 6px 14px rgba(0,0,0,0.15);
+    }
+    .column h2 {
+      text-align: center;
       margin-bottom: 15px;
     }
     .task {
-      background: #fff;
+      background: #ffffff;
+      margin: 12px 0;
+      padding: 12px;
       border-radius: 8px;
-      padding: 16px;
-      margin-bottom: 12px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      transition: box-shadow 0.2s ease;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+      transition: transform 0.2s ease, border-left 0.3s ease;
+      cursor: grab;
+      border-left: 5px solid transparent;
+      position: relative;
     }
-    .task:hover {
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    .task:active {
+      transform: scale(1.02);
     }
-    .task-left {
+    /* Indicadores de prioridad */
+    .task[data-priority="Alta"] { border-left-color: #e74c3c; } /* Rojo */
+    .task[data-priority="Media"] { border-left-color: #f1c40f; } /* Amarillo */
+    .task[data-priority="Baja"] { border-left-color: #2ecc71; } /* Verde */
+
+    .task-content {
       flex: 1;
     }
-    .task-left input.title {
-      font-size: 1em;
-      font-weight: bold;
-      border: none;
-      background: transparent;
-      width: 100%;
-      margin-bottom: 8px;
+    .task-content h3 {
+      margin: 0 0 6px;
+      font-size: 1.1em;
     }
-    .subtasks label {
+    .subtasks-container {
+      margin-top: 8px;
+    }
+    .subtasks-container label {
       display: block;
       font-size: 0.9em;
       margin-bottom: 4px;
     }
-    .task-right {
-      width: 160px;
+    .subtasks-container input[type="checkbox"]:checked + span {
+      text-decoration: line-through;
+      color: #7f8c8d;
+    }
+    .task-meta {
+      width: 100px;
+      padding-left: 10px;
+      font-size: 0.85em;
       display: flex;
       flex-direction: column;
       gap: 6px;
-      font-size: 0.85em;
     }
-    .task-right input, .task-right select {
-      border: 1px solid #ccc;
-      border-radius: 4px;
+    .task-meta div {
+      background: #f0f0f0;
       padding: 4px;
-      width: 100%;
-      box-sizing: border-box;
-    }
-    .add-task {
-      margin-top: 10px;
-    }
-    .add-task input, .add-task select {
-      width: 100%;
-      margin-bottom: 6px;
-      padding: 6px;
       border-radius: 4px;
-      border: 1px solid #ccc;
     }
-    .add-task button {
+    .task-meta .due-date {
+      color: #e74c3c;
+      font-weight: bold;
+    }
+    .add-task-btn {
       width: 100%;
-      padding: 8px;
-      background-color: #007bff;
-      color: white;
-      border: none;
-      border-radius: 4px;
+      padding: 10px;
+      margin-top: 15px;
+      border: 2px dashed #bdc3c7;
+      background: #fdfdfd;
+      border-radius: 8px;
       cursor: pointer;
+      color: #7f8c8d;
+      transition: background 0.2s ease;
     }
-    .add-task button:hover {
-      background-color: #0056b3;
+    .add-task-btn:hover {
+      background: #ecf0f1;
     }
   </style>
 </head>
 <body>
-  <h1>🧠 Planner tipo Asana</h1>
-
-  <div class="day-section" id="lunes">
-    <h2>Lunes</h2>
-    <div id="tasks-lunes"></div>
-    <div class="add-task">
-      <input type="text" placeholder="Título de tarea" id="titulo-lunes">
-      <select id="prioridad-lunes">
-        <option value="Alta">Alta</option>
-        <option value="Media">Media</option>
-        <option value="Baja">Baja</option>
-      </select>
-      <input type="text" placeholder="Responsable" id="responsable-lunes">
-      <input type="date" id="fecha-lunes">
-      <button onclick="agregarTarea('lunes')">Agregar tarea</button>
+  <h1>🧠 Tablero de Productividad</h1>
+  <div class="board">
+    <div class="column" data-status="por-hacer" ondrop="drop(event)" ondragover="allowDrop(event)">
+      <h2>Por hacer</h2>
+      <button class="add-task-btn" onclick="addTask('por-hacer')">+ Agregar tarea</button>
+    </div>
+    <div class="column" data-status="en-progreso" ondrop="drop(event)" ondragover="allowDrop(event)">
+      <h2>En progreso</h2>
+      <button class="add-task-btn" onclick="addTask('en-progreso')">+ Agregar tarea</button>
+    </div>
+    <div class="column" data-status="hecho" ondrop="drop(event)" ondragover="allowDrop(event)">
+      <h2>Hecho</h2>
+      <button class="add-task-btn" onclick="addTask('hecho')">+ Agregar tarea</button>
     </div>
   </div>
 
-  <!-- Puedes duplicar más días aquí -->
-
   <script>
-    let contador = 0;
-    function agregarTarea(dia) {
-      const titulo = document.getElementById(`titulo-${dia}`).value.trim();
-      const prioridad = document.getElementById(`prioridad-${dia}`).value;
-      const responsable = document.getElementById(`responsable-${dia}`).value.trim();
-      const fecha = document.getElementById(`fecha-${dia}`).value;
-      if (!titulo) return;
+    // --- Modelo de Datos ---
+    let tasks = [
+      {
+        id: 'task-1',
+        title: 'Diseñar UI',
+        status: 'por-hacer',
+        priority: 'Alta',
+        assignee: 'Victor',
+        dueDate: '2025-08-30',
+        subtasks: [
+          { name: 'Wireframes', completed: false },
+          { name: 'Paleta de colores', completed: true }
+        ]
+      },
+      {
+        id: 'task-2',
+        title: 'Definir MVP',
+        status: 'por-hacer',
+        priority: 'Media',
+        assignee: 'Victor',
+        dueDate: '2025-09-05',
+        subtasks: [
+          { name: 'Funciones clave', completed: false },
+          { name: 'Alcance técnico', completed: false }
+        ]
+      },
+      {
+        id: 'task-3',
+        title: 'Implementar login',
+        status: 'en-progreso',
+        priority: 'Alta',
+        assignee: 'Ana',
+        dueDate: '2025-08-25',
+        subtasks: []
+      }
+    ];
 
-      const taskId = `task-${dia}-${contador++}`;
-      const contenedor = document.getElementById(`tasks-${dia}`);
+    // --- Funciones de Lógica ---
+    const board = document.querySelector('.board');
 
-      const task = document.createElement("div");
-      task.className = "task";
-      task.id = taskId;
+    // Función para renderizar todas las tareas
+    function renderTasks() {
+      // Limpiar columnas existentes
+      document.querySelectorAll('.column > .task').forEach(taskEl => taskEl.remove());
 
-      task.innerHTML = `
-        <div class="task-left">
-          <input class="title" value="${titulo}" />
-          <div class="subtasks">
-            <label><input type="checkbox" /> Subtarea 1</label>
-            <label><input type="checkbox" /> Subtarea 2</label>
+      tasks.forEach(task => {
+        // Crear el elemento de tarea
+        const taskEl = document.createElement('div');
+        taskEl.className = 'task';
+        taskEl.id = task.id;
+        taskEl.setAttribute('draggable', 'true');
+        taskEl.setAttribute('data-priority', task.priority);
+
+        // Añadir el contenido HTML de la tarea
+        taskEl.innerHTML = `
+          <div class="task-content">
+            <h3 contenteditable="true" onblur="updateTaskTitle(this, '${task.id}')">${task.title}</h3>
+            ${task.subtasks.length > 0 ? `
+            <div class="subtasks-container">
+              ${task.subtasks.map(subtask => `
+                <label>
+                  <input type="checkbox" ${subtask.completed ? 'checked' : ''} onclick="toggleSubtask(this, '${task.id}', '${subtask.name}')">
+                  <span>${subtask.name}</span>
+                </label>
+              `).join('')}
+            </div>
+            ` : ''}
           </div>
-        </div>
-        <div class="task-right">
-          <select>
-            <option ${prioridad === 'Alta' ? 'selected' : ''}>Alta</option>
-            <option ${prioridad === 'Media' ? 'selected' : ''}>Media</option>
-            <option ${prioridad === 'Baja' ? 'selected' : ''}>Baja</option>
-          </select>
-          <input value="${responsable}" placeholder="Responsable" />
-          <input type="date" value="${fecha}" />
-        </div>
-      `;
+          <div class="task-meta">
+            <div class="priority-label">${task.priority}</div>
+            <div class="assignee-label">Responsable: ${task.assignee}</div>
+            <div class="due-date">Vence: ${task.dueDate}</div>
+          </div>
+        `;
 
-      contenedor.appendChild(task);
-      document.getElementById(`titulo-${dia}`).value = "";
-      document.getElementById(`responsable-${dia}`).value = "";
-      document.getElementById(`fecha-${dia}`).value = "";
+        // Asignar los eventos de drag and drop
+        taskEl.addEventListener('dragstart', drag);
+
+        // Encontrar la columna correcta y agregar la tarea
+        const targetColumn = board.querySelector(`.column[data-status="${task.status}"]`);
+        if (targetColumn) {
+          const addTaskBtn = targetColumn.querySelector('.add-task-btn');
+          targetColumn.insertBefore(taskEl, addTaskBtn);
+        }
+      });
     }
+
+    // Función para agregar una nueva tarea
+    function addTask(status) {
+      const newTask = {
+        id: `task-${Date.now()}`, // ID único
+        title: 'Nueva tarea',
+        status: status,
+        priority: 'Media',
+        assignee: 'Sin asignar',
+        dueDate: 'YYYY-MM-DD',
+        subtasks: []
+      };
+      tasks.push(newTask);
+      renderTasks();
+    }
+
+    // Función para actualizar el título de una tarea
+    function updateTaskTitle(element, taskId) {
+      const task = tasks.find(t => t.id === taskId);
+      if (task) {
+        task.title = element.innerText;
+      }
+    }
+
+    // Función para marcar/desmarcar subtareas
+    function toggleSubtask(checkbox, taskId, subtaskName) {
+      const task = tasks.find(t => t.id === taskId);
+      if (task) {
+        const subtask = task.subtasks.find(s => s.name === subtaskName);
+        if (subtask) {
+          subtask.completed = checkbox.checked;
+        }
+      }
+    }
+
+    // --- Funciones de Drag and Drop ---
+    function allowDrop(ev) {
+      ev.preventDefault();
+    }
+
+    function drag(ev) {
+      ev.dataTransfer.setData("text/plain", ev.target.id);
+    }
+
+    function drop(ev) {
+      ev.preventDefault();
+      const data = ev.dataTransfer.getData("text/plain");
+      const taskElement = document.getElementById(data);
+      const targetColumn = ev.target.closest('.column');
+
+      if (targetColumn) {
+        // Encontrar la tarea en el array y actualizar su estado
+        const task = tasks.find(t => t.id === data);
+        if (task) {
+          task.status = targetColumn.dataset.status;
+        }
+
+        // Mover el elemento visualmente
+        const addTaskBtn = targetColumn.querySelector('.add-task-btn');
+        targetColumn.insertBefore(taskElement, addTaskBtn);
+      }
+    }
+
+    // Inicializar el tablero al cargar la página
+    document.addEventListener('DOMContentLoaded', () => {
+      renderTasks();
+    });
   </script>
 </body>
 </html>
