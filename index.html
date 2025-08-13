@@ -1,482 +1,245 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Productividad Pro — Kanban + Lista + Invitaciones + Recordatorios</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
-      --bg: #f6f8fb; --surface:#ffffff; --border:#e5e7eb; --muted:#6b7280; --text:#111827;
-      --primary:#5d6afe; --primary-600:#4a54d6; --shadow:0 8px 24px rgba(0,0,0,.08);
-      --high:#ef4444; --med:#f59e0b; --low:#10b981;
-      --tag-bg:#eef6ff; --tag-txt:#2563eb;
-      --success:#10b981; --warn:#f59e0b; --danger:#ef4444;
-    }
-    [data-theme="dark"]{ --bg:#0b1220; --surface:#0f172a; --border:#1f2937; --muted:#9ca3af; --text:#e5e7eb; --tag-bg:#0b2a52; --tag-txt:#93c5fd; --shadow:0 8px 24px rgba(0,0,0,.45); }
-
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{margin:0;background:var(--bg);font-family:var(--font-family);color:var(--text);line-height:1.55;padding:24px}
-
-    h1{margin:0 0 16px;font-size:28px}
-    .appbar{display:flex;gap:12px;align-items:center;justify-content:space-between;background:var(--surface);padding:12px 16px;border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow);flex-wrap:wrap}
-    .left, .right{display:flex;gap:8px;align-items:center}
-    .tabs{display:flex;background:#eef1f4;border-radius:12px;padding:4px}
-    [data-theme="dark"] .tabs{background:#111827}
-    .tabs button{border:none;background:transparent;padding:10px 14px;border-radius:10px;font-weight:600;cursor:pointer;color:var(--text)}
-    .tabs button.active{background:var(--primary);color:#fff;box-shadow:0 6px 14px rgba(93,106,254,.35)}
-    .btn{display:inline-flex;gap:8px;align-items:center;border:none;background:var(--primary);color:#fff;padding:10px 14px;border-radius:10px;font-weight:600;cursor:pointer;box-shadow:0 6px 14px rgba(93,106,254,.25)}
-    .btn.secondary{background:transparent;color:var(--text);border:1px solid var(--border);box-shadow:none}
-    .btn.ghost{background:transparent;color:var(--text);box-shadow:none}
-    .btn:hover{filter:brightness(.95)}
-    .icon{width:18px;height:18px}
-
-    .filters{display:flex;gap:8px;align-items:center}
-    .input, select{padding:10px 12px;border:1px solid var(--border);background:#fff;border-radius:10px;min-width:160px;color:var(--text)}
-    [data-theme="dark"] .input, [data-theme="dark"] select{background:#0b1220}
-
-    .stats{display:flex;gap:12px;align-items:center;color:var(--muted);font-size:14px}
-
-    .board{display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap;margin-top:16px}
-    .col{background:var(--surface);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow);padding:16px;width:340px;min-height:520px;display:flex;flex-direction:column}
-    .col h3{margin:0 0 10px}
-    .addColBtn{border:2px dashed var(--border);background:transparent;color:var(--muted);padding:12px;border-radius:12px;cursor:pointer}
-
-    .card{background:#fff;border-radius:12px;border:1px solid var(--border);box-shadow:0 2px 10px rgba(0,0,0,.05);padding:14px;margin:8px 0;cursor:grab;display:flex;flex-direction:column;gap:8px;border-left:6px solid transparent}
-    [data-theme="dark"] .card{background:#0b1220}
-    .card[data-pr="Alta"]{border-left-color:var(--high)}
-    .card[data-pr="Media"]{border-left-color:var(--med)}
-    .card[data-pr="Baja"]{border-left-color:var(--low)}
-    .meta{display:flex;gap:10px;flex-wrap:wrap;color:var(--muted);font-size:12px}
-    .badge{background:var(--tag-bg);color:var(--tag-txt);border-radius:8px;padding:4px 8px;font-weight:600;font-size:12px}
-
-    .listWrap{display:none;background:var(--surface);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow);padding:16px;margin-top:16px;overflow:auto}
-    .listToolbar{display:flex;gap:8px;align-items:center;margin-bottom:8px}
-
-    /* Tabla con columnas reordenables */
-    .table{min-width:980px;width:100%;border-collapse:separate;border-spacing:0}
-    .thead{position:sticky;top:0;background:var(--surface);z-index:1}
-    .th, .td{padding:10px 12px;border-bottom:1px solid var(--border);text-align:left}
-    .th{user-select:none;cursor:grab;font-weight:700;color:var(--muted)}
-    .th.dragging{opacity:.4}
-    .row{cursor:pointer}
-
-    .prioritySelect{padding:6px 10px;border:1px solid var(--border);border-radius:8px}
-
-    /* Modal */
-    .modal{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;padding:24px;z-index:50}
-    .modal.is-open{display:flex}
-    .modalCard{background:var(--surface);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow);max-width:920px;width:100%;padding:20px;position:relative}
-    .closeX{position:absolute;right:14px;top:10px;font-size:28px;color:var(--muted);cursor:pointer}
-    .modalGrid{display:grid;grid-template-columns:2fr 1fr;gap:18px}
-    @media (max-width: 860px){.modalGrid{grid-template-columns:1fr}}
-
-    .field{display:flex;flex-direction:column;gap:6px;margin-bottom:10px}
-    .field label{font-size:12px;color:var(--muted)}
-    .chips{display:flex;flex-wrap:wrap;gap:8px}
-    .chip{background:var(--tag-bg);color:var(--tag-txt);border-radius:999px;padding:6px 10px;font-size:12px}
-    .subtasks li{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border)}
-    .progress{height:8px;background:#e5e7eb;border-radius:6px;overflow:hidden}
-    .progress > div{height:100%;background:var(--low);width:0}
-
-    .avatar{width:24px;height:24px;border-radius:999px;background:#e2e8f0;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#334155}
-
-    .toast{position:fixed;right:16px;bottom:16px;background:var(--surface);border:1px solid var(--border);box-shadow:var(--shadow);padding:10px 14px;border-radius:10px}
-
-  </style>
+<meta charset="UTF-8">
+<title>Productividad Pro — Kanban + Lista</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+/* ======== ESTILOS BASE ======== */
+body {
+  font-family: sans-serif;
+  margin: 0;
+  background: var(--bg, #f4f4f4);
+  color: var(--text, #333);
+}
+header {
+  background: var(--header-bg, #1976d2);
+  color: white;
+  padding: 0.5rem 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+header button, header select, header input {
+  margin-left: 0.5rem;
+}
+main {
+  padding: 1rem;
+}
+.kanban {
+  display: flex;
+  gap: 1rem;
+}
+.column {
+  background: var(--col-bg, #fff);
+  border-radius: 6px;
+  flex: 1;
+  padding: 0.5rem;
+}
+.card {
+  background: white;
+  margin: 0.5rem 0;
+  padding: 0.5rem;
+  border-radius: 4px;
+  cursor: grab;
+  border-left: 6px solid transparent;
+}
+.card[data-priority="Alta"] { border-color: #e53935; }
+.card[data-priority="Media"] { border-color: #ffb300; }
+.card[data-priority="Baja"] { border-color: #43a047; }
+.lista table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.lista th, .lista td {
+  border: 1px solid #ccc;
+  padding: 0.4rem;
+}
+.lista th {
+  cursor: grab;
+  background: #eee;
+}
+.dark {
+  --bg: #121212;
+  --text: #e0e0e0;
+  --header-bg: #333;
+  --col-bg: #1e1e1e;
+}
+</style>
 </head>
 <body>
-  <div class="appbar">
-    <div class="left">
-      <div class="tabs">
-        <button id="tab-kanban" class="active">Tablero</button>
-        <button id="tab-lista">Lista</button>
-      </div>
-      <button class="btn" id="btn-new">＋ Nueva</button>
-      <button class="btn secondary" id="btn-import">↥ Importar</button>
-      <button class="btn secondary" id="btn-export">↧ Exportar</button>
-      <div class="filters">
-        <input id="q" class="input" placeholder="Buscar ( / )" />
-        <select id="f-assignee"></select>
-        <select id="f-priority">
-          <option value="">Prioridad</option>
-          <option>Alta</option><option>Media</option><option>Baja</option>
-        </select>
-        <select id="f-status">
-          <option value="">Estado</option>
-          <option value="por-hacer">Por hacer</option>
-          <option value="en-progreso">En progreso</option>
-          <option value="hecho">Hecho</option>
-        </select>
-      </div>
-    </div>
-    <div class="right">
-      <button class="btn ghost" id="btn-invite">Invitar usuarios</button>
-      <button class="btn ghost" id="btn-notify">Activar notifs</button>
-      <button class="btn ghost" id="btn-theme" title="Modo oscuro (D)">🌙</button>
-      <button class="btn ghost" id="btn-google">Conectar Google</button>
-    </div>
+<header>
+  <div>
+    <strong>Productividad Pro</strong>
+    <button onclick="toggleView()">Cambiar Vista</button>
+    <button onclick="newTask()">＋ Nueva</button>
+    <button onclick="inviteUser()">Invitar</button>
+    <input id="search" placeholder="Buscar..." oninput="render()">
   </div>
-
-  <div class="stats" id="stats"></div>
-
-  <!-- KANBAN -->
-  <div id="kanban" class="board"></div>
-
-  <!-- LISTA -->
-  <div id="lista" class="listWrap">
-    <div class="listToolbar">
-      <small style="color:var(--muted)">Arrastra los encabezados para reordenar columnas. Se guarda en tu navegador.</small>
-    </div>
-    <table class="table">
-      <thead class="thead">
-        <tr id="list-head"></tr>
-      </thead>
-      <tbody id="list-body"></tbody>
-    </table>
+  <div>
+    <button onclick="toggleDark()">🌙</button>
+    <button onclick="exportJSON()">⭳</button>
+    <button onclick="importJSON()">⭱</button>
+    <button onclick="connectGoogle()">Conectar Google</button>
   </div>
+</header>
+<main id="app"></main>
 
-  <!-- MODAL TAREA -->
-  <div id="modal" class="modal" role="dialog" aria-modal="true">
-    <div class="modalCard">
-      <span class="closeX" id="closeModal">×</span>
-      <div class="field">
-        <input id="m-title" class="input" style="font-size:22px;font-weight:700;border-radius:12px"/>
-      </div>
-      <div class="modalGrid">
-        <div>
-          <div class="field">
-            <label>Descripción</label>
-            <textarea id="m-desc" class="input" rows="4" style="resize:vertical"></textarea>
-          </div>
-          <div class="field">
-            <label>Subtareas</label>
-            <ul id="m-subtasks" class="subtasks"></ul>
-            <button class="btn secondary" id="m-add-sub">＋ Subtarea</button>
-            <div class="progress" style="margin-top:8px"><div id="m-progress"></div></div>
-          </div>
-        </div>
-        <div>
-          <div class="field"><label>Estado</label>
-            <select id="m-status" class="input">
-              <option value="por-hacer">Por hacer</option>
-              <option value="en-progreso">En progreso</option>
-              <option value="hecho">Hecho</option>
-            </select>
-          </div>
-          <div class="field"><label>Prioridad</label>
-            <select id="m-priority" class="input"><option>Alta</option><option>Media</option><option>Baja</option></select>
-          </div>
-          <div class="field"><label>Asignado a</label>
-            <select id="m-assignee" class="input"></select>
-          </div>
-          <div class="field"><label>Inicio</label><input type="datetime-local" id="m-start" class="input"></div>
-          <div class="field"><label>Fin</label><input type="datetime-local" id="m-end" class="input"></div>
-          <div class="field"><label>Recordatorio</label><input type="datetime-local" id="m-rem" class="input"></div>
-          <div class="field"><label>Tiempo (h)</label>
-            <div style="display:flex;gap:8px">
-              <input id="m-est" class="input" type="number" placeholder="Estimado">
-              <input id="m-log" class="input" type="number" placeholder="Registrado">
-            </div>
-            <div style="display:flex;gap:6px;margin-top:6px">
-              <button class="btn secondary" data-log="0.5">+0.5h</button>
-              <button class="btn secondary" data-log="1">+1h</button>
-              <button class="btn secondary" data-log="2">+2h</button>
-            </div>
-          </div>
-          <div class="field"><label>Etiquetas</label>
-            <div id="m-tags" class="chips"></div>
-            <input id="m-newtag" class="input" placeholder="Añadir etiqueta (Enter)">
-          </div>
-          <div class="field" style="display:flex;gap:8px;flex-wrap:wrap">
-            <button class="btn" id="m-save">Guardar</button>
-            <button class="btn secondary" id="m-delete">Eliminar</button>
-            <button class="btn secondary" id="m-sync">Sincronizar con Google Calendar</button>
-          </div>
-        </div>
-      </div>
-    </div>
+<!-- MODAL DE TAREA -->
+<div id="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%;
+background:rgba(0,0,0,0.5); align-items:center; justify-content:center;">
+  <div style="background:white; padding:1rem; width:300px;">
+    <h3 id="modal-title">Tarea</h3>
+    <input id="task-title" placeholder="Título"><br>
+    <textarea id="task-desc" placeholder="Descripción"></textarea><br>
+    <label>Prioridad:
+      <select id="task-priority">
+        <option>Alta</option><option>Media</option><option>Baja</option>
+      </select>
+    </label><br>
+    <label>Vence: <input type="date" id="task-date"></label><br>
+    <button onclick="saveTask()">Guardar</button>
+    <button onclick="closeModal()">Cerrar</button>
   </div>
-
-  <!-- MODAL INVITAR -->
-  <div id="modalInvite" class="modal">
-    <div class="modalCard" style="max-width:520px">
-      <span class="closeX" data-close="#modalInvite">×</span>
-      <h3 style="margin-top:0">Invitar usuarios por correo</h3>
-      <div class="field"><label>Correos (separados por coma)</label>
-        <textarea id="invite-emails" class="input" rows="3" placeholder="ana@ejemplo.com, carlos@empresa.com"></textarea>
-      </div>
-      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-        <button class="btn" id="send-invites">Enviar invitaciones</button>
-        <small style="color:var(--muted)">Se agregan como colaboradores locales y se abre tu cliente de correo (mailto) como fallback.</small>
-      </div>
-      <div class="field">
-        <label>Colaboradores actuales</label>
-        <div id="invite-list" class="chips"></div>
-      </div>
-    </div>
-  </div>
-
-  <div id="toast" class="toast" style="display:none"></div>
-
-  <!-- Google API (rellena CLIENT_ID y API_KEY) -->
-  <script src="https://apis.google.com/js/api.js"></script>
+</div>
 
 <script>
-// ======= Estado =======
 let tasks = JSON.parse(localStorage.getItem('tasks')||'[]');
-if (!tasks.length){
-  tasks = [
-    {id:'t1', title:'Diseñar UI', desc:'Pantallas principales', status:'por-hacer', priority:'Alta', assignee:'Victor', start:'2025-08-10T09:00', end:'2025-08-30T17:00', reminder:'', est:8, log:2, tags:['Diseño','Frontend'], subtasks:[{t:'Wireframes',c:true},{t:'Prototipo alta',c:false}]},
-    {id:'t2', title:'Definir MVP', desc:'Alcance del release 1', status:'por-hacer', priority:'Media', assignee:'Victor', start:'2025-08-08T10:00', end:'2025-09-05T17:00', reminder:'', est:4, log:1, tags:['Producto'], subtasks:[]},
-    {id:'t3', title:'Implementar login', desc:'OAuth + sesión', status:'en-progreso', priority:'Alta', assignee:'Ana', start:'2025-08-15T09:00', end:'2025-08-25T17:00', reminder:'', est:12, log:6, tags:['Backend'], subtasks:[{t:'DB',c:true},{t:'Endpoint',c:false},{t:'Formulario',c:false}]},
-    {id:'t4', title:'Reunión de seguimiento', desc:'Sprint review', status:'por-hacer', priority:'Baja', assignee:'Equipo', start:'2025-08-13T11:00', end:'2025-08-15T12:00', reminder:'2025-08-15T10:00', est:1, log:0, tags:['Reunión'], subtasks:[]},
-    {id:'t5', title:'Documentación técnica', desc:'Arquitectura', status:'hecho', priority:'Baja', assignee:'Luis', start:'2025-08-05T09:00', end:'2025-08-10T17:00', reminder:'', est:5, log:5, tags:['Doc'], subtasks:[{t:'Esqueleto',c:true},{t:'Arquitectura',c:true}]}
-  ];
-}
-let users = JSON.parse(localStorage.getItem('users')||'[]');
-if (!users.length){ users = ['Victor','Ana','Luis','Carlos','Elena','Equipo','Sin asignar']; }
-let currentId = null;
-let columnOrder = JSON.parse(localStorage.getItem('columnOrder')||'null') || [
-  'done','title','start','end','assignee','priority','time','tags','actions'
-];
-const columnLabels = {
-  done:'Hecha', title:'Tarea', start:'Inicio', end:'Fin', assignee:'Colab.', priority:'Prioridad', time:'Tiempo', tags:'Etiquetas', actions:''
-};
+let view = localStorage.getItem('view')||'kanban';
+let editId = null;
 
-// ======= Util =======
-const $ = s => document.querySelector(s);
-const $$ = s => Array.from(document.querySelectorAll(s));
-const save = () => { localStorage.setItem('tasks', JSON.stringify(tasks)); updateStats(); };
-const toast = (m)=>{ const t=$('#toast'); t.textContent=m; t.style.display='block'; setTimeout(()=>t.style.display='none',2200); };
-const fmtDate = (iso)=> iso? new Date(iso).toLocaleString():'';
-const avatar = (name)=>`<span class="avatar" title="${name}">${(name||'?').slice(0,2).toUpperCase()}</span>`;
-
-// ======= Filtros/controles =======
-const q = $('#q');
-const fAssignee = $('#f-assignee');
-const fPriority = $('#f-priority');
-const fStatus = $('#f-status');
-function populateAssignees(){ fAssignee.innerHTML = '<option value="">Colaborador</option>' + users.map(u=>`<option>${u}</option>`).join(''); $('#m-assignee').innerHTML = users.map(u=>`<option>${u}</option>`).join(''); }
-populateAssignees();
-
-// ======= Render Kanban =======
-const kanban = $('#kanban');
-function renderKanban(){
-  kanban.innerHTML='';
-  const cols = ['por-hacer','en-progreso','hecho'];
-  const labels = {'por-hacer':'Por hacer','en-progreso':'En progreso','hecho':'Hecho'};
-  cols.forEach(st=>{
-    const col = document.createElement('div'); col.className='col'; col.dataset.status=st;
-    col.innerHTML = `<h3>${labels[st]}</h3><button class="addColBtn" data-add="${st}">＋ Añadir tarea</button>`;
-    kanban.appendChild(col);
-  });
-  // Tarjetas
-  filteredTasks().forEach(t=>{
-    const el = document.createElement('div'); el.className='card'; el.id=t.id; el.dataset.pr=t.priority; el.draggable=true;
-    const dueSoon = t.end && (new Date(t.end)-Date.now()) < 48*3600*1000 && (new Date(t.end)>Date.now());
-    const overdue = t.end && (new Date(t.end) < Date.now()) && t.status!=='hecho';
-    el.innerHTML = `
-      <div style="display:flex;justify-content:space-between;gap:8px;align-items:center">
-        <div contenteditable onblur="editTitle('${t.id}', this.textContent)" style="font-weight:700">${t.title}</div>
-        <button class="btn secondary" onclick="openModal('${t.id}');event.stopPropagation()">Abrir</button>
-      </div>
-      <div class="meta">
-        ${avatar(t.assignee)} <span>${t.assignee}</span>
-        <span>•</span>
-        <span title="${fmtDate(t.end)}">Fin: ${t.end? new Date(t.end).toLocaleDateString(): '-'}</span>
-        ${overdue? '<span class="badge" style="background:rgba(239,68,68,.12);color:#ef4444">Vencida 🔴</span>':''}
-        ${dueSoon? '<span class="badge" style="background:rgba(245,158,11,.12);color:#f59e0b">Pronto 🟡</span>':''}
-      </div>
-      ${t.tags?.length? `<div class="meta">${t.tags.map(x=>`<span class='badge'>${x}</span>`).join('')}</div>`:''}
-    `;
-    el.addEventListener('dragstart', e=>{ e.dataTransfer.setData('text/plain', t.id); });
-    el.addEventListener('click', ()=>openModal(t.id));
-    const target = $(`.col[data-status='${t.status}']`);
-    target.appendChild(el);
-  });
-  // DnD columnas
-  $$('.col').forEach(c=>{
-    c.addEventListener('dragover', e=>e.preventDefault());
-    c.addEventListener('drop', e=>{ e.preventDefault(); const id=e.dataTransfer.getData('text/plain'); const task=tasks.find(x=>x.id===id); if(task){ task.status=c.dataset.status; save(); renderAll(); }});
-  });
+function render(){
+  const app = document.getElementById('app');
+  const q = document.getElementById('search').value.toLowerCase();
+  const filtered = tasks.filter(t=>t.title.toLowerCase().includes(q));
+  if(view==='kanban'){
+    app.innerHTML = `<div class="kanban">
+      ${['Por hacer','En progreso','Hecho'].map(col=>`
+        <div class="column" ondragover="event.preventDefault()" ondrop="drop(event,'${col}')">
+          <h3>${col}</h3>
+          ${filtered.filter(t=>t.status===col).map(t=>`
+            <div class="card" draggable="true" ondragstart="drag(event,'${t.id}')" data-priority="${t.priority}">
+              ${t.title}
+            </div>`).join('')}
+        </div>`).join('')}
+    </div>`;
+  } else {
+    app.innerHTML = `<div class="lista">
+      <table>
+        <thead>
+          <tr><th>Título</th><th>Prioridad</th><th>Estado</th><th>Vence</th></tr>
+        </thead>
+        <tbody>
+          ${filtered.map(t=>`
+            <tr>
+              <td>${t.title}</td>
+              <td>
+                <select onchange="setPriority('${t.id}',this.value)">
+                  <option ${t.priority==='Alta'?'selected':''}>Alta</option>
+                  <option ${t.priority==='Media'?'selected':''}>Media</option>
+                  <option ${t.priority==='Baja'?'selected':''}>Baja</option>
+                </select>
+              </td>
+              <td>${t.status}</td>
+              <td>${t.date||''}</td>
+            </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>`;
+  }
+  localStorage.setItem('tasks', JSON.stringify(tasks));
 }
 
-// ======= Render Lista con columnas reordenables =======
-const listHead = $('#list-head');
-const listBody = $('#list-body');
-function renderList(){
-  $('#lista').style.display='block';
-  listHead.innerHTML = '';
-  columnOrder.forEach(key=>{
-    const th = document.createElement('th'); th.className='th'; th.draggable=true; th.dataset.key=key; th.textContent = columnLabels[key]||key;
-    th.addEventListener('dragstart', ()=>{ th.classList.add('dragging'); });
-    th.addEventListener('dragend', ()=>{ th.classList.remove('dragging'); });
-    th.addEventListener('dragover', e=>{ e.preventDefault(); const after = getAfterHeader(listHead, e.clientX); if(after==null){ listHead.appendChild(th); } else { listHead.insertBefore(th, after); }});
-    th.addEventListener('drop', ()=>{ columnOrder = Array.from(listHead.children).map(el=>el.dataset.key); localStorage.setItem('columnOrder', JSON.stringify(columnOrder)); renderListRows(); });
-    listHead.appendChild(th);
-  });
-  renderListRows();
-}
-function getAfterHeader(container, x){ const els=[...container.querySelectorAll('.th:not(.dragging)')]; return els.reduce((closest,child)=>{const box=child.getBoundingClientRect(); const offset = x - box.left - box.width/2; if(offset<0 && offset>closest.offset){return {offset,element:child}} else return closest;},{offset:Number.NEGATIVE_INFINITY}).element; }
-
-function renderListRows(){
-  listBody.innerHTML='';
-  filteredTasks().forEach(t=>{
-    const tr = document.createElement('tr'); tr.className='row'; tr.addEventListener('click', ()=>openModal(t.id));
-    columnOrder.forEach(key=>{
-      const td = document.createElement('td'); td.className='td';
-      if(key==='done'){
-        td.innerHTML = `<input type='checkbox' ${t.status==='hecho'?'checked':''} onclick="event.stopPropagation();toggleDone('${t.id}', this.checked)">`;
-      } else if(key==='title'){
-        td.innerHTML = `<div style='display:flex;align-items:center;gap:8px'><input type='checkbox' ${t.status==='hecho'?'checked':''} onclick="event.stopPropagation();toggleDone('${t.id}', this.checked)"><span>${t.title}</span></div>`;
-      } else if(key==='start'){ td.textContent = fmtDate(t.start); }
-      else if(key==='end'){ td.textContent = fmtDate(t.end); }
-      else if(key==='assignee'){ td.innerHTML = `${avatar(t.assignee)} <span>${t.assignee}</span>`; }
-      else if(key==='priority'){
-        td.innerHTML = `<select class='prioritySelect' onchange="event.stopPropagation();setPriority('${t.id}', this.value)"><option ${t.priority==='Alta'?'selected':''}>Alta</option><option ${t.priority==='Media'?'selected':''}>Media</option><option ${t.priority==='Baja'?'selected':''}>Baja</option></select>`;
-      } else if(key==='time'){ td.textContent = `${t.est||0}h / ${t.log||0}h`; }
-      else if(key==='tags'){ td.innerHTML = (t.tags||[]).map(x=>`<span class='badge'>${x}</span>`).join(' '); }
-      else if(key==='actions'){
-        td.innerHTML = `<button class='btn secondary' onclick="openModal('${t.id}');event.stopPropagation()">Editar</button>`;
-      }
-      tr.appendChild(td);
-    });
-    listBody.appendChild(tr);
-  });
+function toggleView(){
+  view = view==='kanban'?'lista':'kanban';
+  localStorage.setItem('view',view);
+  render();
 }
 
-// ======= Filtro =======
-function filteredTasks(){
-  const qv = q.value.toLowerCase();
-  return tasks.filter(t=>{
-    if(fAssignee.value && t.assignee!==fAssignee.value) return false;
-    if(fPriority.value && t.priority!==fPriority.value) return false;
-    if(fStatus.value && t.status!==fStatus.value) return false;
-    if(qv){ const hay=[t.title,t.desc,(t.tags||[]).join(' ')].join(' ').toLowerCase(); if(!hay.includes(qv)) return false; }
-    return true;
-  });
+function toggleDark(){
+  document.body.classList.toggle('dark');
 }
-[q,fAssignee,fPriority,fStatus].forEach(el=> el.addEventListener('input', ()=>renderAll()));
 
-// ======= Modal =======
-const modal = $('#modal');
-function openModal(id){ currentId=id; const t = tasks.find(x=>x.id===id); if(!t) return; modal.classList.add('is-open');
-  $('#m-title').value=t.title; $('#m-desc').value=t.desc||''; $('#m-status').value=t.status; $('#m-priority').value=t.priority; $('#m-assignee').value=t.assignee; $('#m-start').value=t.start||''; $('#m-end').value=t.end||''; $('#m-rem').value=t.reminder||''; $('#m-est').value=t.est||0; $('#m-log').value=t.log||0; renderModalTags(t); renderModalSubs(t); }
-function closeModal(){ modal.classList.remove('is-open'); renderAll(); }
-$('#closeModal').onclick=closeModal; window.addEventListener('keydown',e=>{ if(e.key==='Escape') closeModal(); });
-
-function renderModalTags(t){ const c=$('#m-tags'); c.innerHTML=''; (t.tags||[]).forEach((tag,i)=>{ const el=document.createElement('span'); el.className='chip'; el.textContent=tag; el.title='Click para quitar'; el.onclick=()=>{ t.tags.splice(i,1); save(); renderModalTags(t); }; c.appendChild(el); }); }
-$('#m-newtag').addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); const v=e.target.value.trim(); if(!v) return; const t=tasks.find(x=>x.id===currentId); t.tags=t.tags||[]; if(!t.tags.includes(v)) t.tags.push(v); e.target.value=''; save(); renderModalTags(t); }});
-
-function renderModalSubs(t){ const ul=$('#m-subtasks'); ul.innerHTML=''; let done=0; (t.subtasks||[]).forEach((s,i)=>{ const li=document.createElement('li'); li.innerHTML=`<input type='checkbox' ${s.c?'checked':''} onchange="toggleSub('${t.id}',${i},this.checked)"> <span ${s.c?"style='text-decoration:line-through;color:var(--muted)'":''}>${s.t}</span> <button class='btn secondary' onclick="delSub('${t.id}',${i})">×</button>`; if(s.c) done++; ul.appendChild(li); }); const pct = (t.subtasks?.length? Math.round(done*100/t.subtasks.length):0); $('#m-progress').style.width=pct+'%'; }
-$('#m-add-sub').onclick=()=>{ const txt=prompt('Nombre de la subtarea'); if(!txt) return; const t=tasks.find(x=>x.id===currentId); t.subtasks=t.subtasks||[]; t.subtasks.push({t:txt,c:false}); save(); renderModalSubs(t); };
-window.toggleSub=(id,i,checked)=>{ const t=tasks.find(x=>x.id===id); t.subtasks[i].c=checked; save(); renderModalSubs(t); maybeNotify('Subtarea completada', t.title+': '+t.subtasks[i].t); };
-window.delSub=(id,i)=>{ const t=tasks.find(x=>x.id===id); t.subtasks.splice(i,1); save(); renderModalSubs(t); };
-
-// Botones modal
-$('#m-save').onclick=()=>{ const t=tasks.find(x=>x.id===currentId); t.title=$('#m-title').value; t.desc=$('#m-desc').value; t.status=$('#m-status').value; t.priority=$('#m-priority').value; t.assignee=$('#m-assignee').value; t.start=$('#m-start').value; t.end=$('#m-end').value; t.reminder=$('#m-rem').value; t.est=parseFloat($('#m-est').value)||0; t.log=parseFloat($('#m-log').value)||0; save(); closeModal(); toast('Guardado'); };
-$('#m-delete').onclick=()=>{ if(confirm('¿Eliminar tarea?')){ tasks = tasks.filter(x=>x.id!==currentId); save(); closeModal(); }};
-$('#m-sync').onclick=()=>{ const t=tasks.find(x=>x.id===currentId); syncTaskToCalendar(t); };
-$$('.field [data-log]').forEach(btn=> btn.addEventListener('click',()=>{ const t=tasks.find(x=>x.id===currentId); t.log=(t.log||0)+parseFloat(btn.dataset.log); $('#m-log').value=t.log; save(); toast('Tiempo registrado'); }));
-
-// Acciones inline
-window.editTitle=(id,txt)=>{ const t=tasks.find(x=>x.id===id); t.title=txt.trim()||t.title; save(); };
-window.toggleDone=(id,checked)=>{ const t=tasks.find(x=>x.id===id); t.status=checked?'hecho':'por-hacer'; save(); renderAll(); };
-window.setPriority=(id, val)=>{ const t=tasks.find(x=>x.id===id); t.priority=val; save(); renderAll(); };
-
-// ======= Crear / Importar / Exportar =======
-$('#btn-new').onclick=()=>{ const id='t'+Date.now(); tasks.unshift({id,title:'Nueva tarea',desc:'',status:'por-hacer',priority:'Media',assignee:'Sin asignar',start:new Date().toISOString().slice(0,16),end:'',reminder:'',est:0,log:0,tags:[],subtasks:[]}); save(); renderAll(); openModal(id); };
-$('#kanban').addEventListener('click',e=>{ const btn=e.target.closest('[data-add]'); if(btn){ const st=btn.dataset.add; const id='t'+Date.now(); const t={id,title:'Nueva tarea',desc:'',status:st,priority:'Media',assignee:'Sin asignar',start:new Date().toISOString().slice(0,16),end:'',reminder:'',est:0,log:0,tags:[],subtasks:[]}; tasks.unshift(t); save(); renderAll(); openModal(id); }});
-$('#btn-export').onclick=()=>{ const blob=new Blob([JSON.stringify(tasks,null,2)],{type:'application/json'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='tareas.json'; a.click(); URL.revokeObjectURL(url); };
-$('#btn-import').onclick=()=>{ const inp=document.createElement('input'); inp.type='file'; inp.accept='.json,application/json'; inp.onchange=async()=>{ const txt=await inp.files[0].text(); try{ const data=JSON.parse(txt); if(Array.isArray(data)){ tasks=data; save(); renderAll(); toast('Importado'); } }catch(e){ alert('JSON inválido'); } }; inp.click(); };
-
-// ======= Invitaciones =======
-const modalInvite = $('#modalInvite');
-$('#btn-invite').onclick=()=>{ renderInviteList(); modalInvite.classList.add('is-open'); };
-$$('.closeX[data-close="#modalInvite"]').forEach(x=> x.onclick=()=> modalInvite.classList.remove('is-open'));
-function renderInviteList(){ const c=$('#invite-list'); c.innerHTML = users.map(u=>`<span class='chip'>${u}</span>`).join(' '); }
-$('#send-invites').onclick=()=>{
-  const raw = $('#invite-emails').value; if(!raw.trim()){ toast('Escribe al menos un correo'); return; }
-  const emails = raw.split(/[ ,;
-]+/).map(s=>s.trim()).filter(Boolean);
-  emails.forEach(em=>{ const name = em.split('@')[0]; if(!users.includes(name)) users.push(name); });
-  localStorage.setItem('users', JSON.stringify(users)); populateAssignees(); renderInviteList(); toast('Invitaciones registradas');
-  // Fallback mailto
-  window.location.href = `mailto:${encodeURIComponent(emails.join(','))}?subject=${encodeURIComponent('Invitación a Productividad Pro')}&body=${encodeURIComponent('Te invito a colaborar en mi tablero.')} `;
-};
-
-// ======= Notificaciones locales =======
-$('#btn-notify').onclick=()=>{ Notification.requestPermission().then(p=>{ if(p==='granted'){ toast('Notificaciones activadas'); } else { alert('Permiso denegado'); } }); };
-function maybeNotify(title, body){ if('Notification' in window && Notification.permission==='granted'){ new Notification(title,{ body }); } }
-// Chequeo periódico de vencimientos y recordatorios
-setInterval(()=>{
-  const now = Date.now();
-  tasks.forEach(t=>{
-    if(t.reminder){ const at=new Date(t.reminder).getTime(); if(at && at>now && at-now<60000){ maybeNotify('⏰ Recordatorio', t.title+' • '+fmtDate(t.reminder)); t.reminder=''; save(); }
-    }
-    if(t.end && t.status!=='hecho'){
-      const end=new Date(t.end).getTime();
-      if(end>now && end-now<30*60000){ maybeNotify('📌 Por vencer', t.title+' en <30 min'); }
-      if(end<now && end>now-60000){ maybeNotify('❗ Vencida', t.title+' ha vencido'); }
-    }
-  });
-}, 30000);
-
-// ======= Google Calendar =======
-const GOOGLE_CLIENT_ID = 'REEMPLAZA_CON_TU_CLIENT_ID.apps.googleusercontent.com';
-const GOOGLE_API_KEY = 'REEMPLAZA_CON_TU_API_KEY';
-const DISCOVERY_DOC = 'https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest';
-const SCOPES = 'https://www.googleapis.com/auth/calendar.events';
-let gapiReady=false, gSigned=false;
-function gapiLoad(){
-  gapi.load('client:auth2', async ()=>{
-    try{ await gapi.client.init({ apiKey: GOOGLE_API_KEY, discoveryDocs:[DISCOVERY_DOC], clientId: GOOGLE_CLIENT_ID, scope: SCOPES }); gapiReady=true; gSigned = gapi.auth2.getAuthInstance().isSignedIn.get(); updateGoogleBtn(); }catch(e){ console.warn(e); toast('Configura API Key y Client ID'); }
-  });
+function newTask(){
+  editId=null;
+  document.getElementById('task-title').value='';
+  document.getElementById('task-desc').value='';
+  document.getElementById('task-priority').value='Media';
+  document.getElementById('task-date').value='';
+  document.getElementById('modal').style.display='flex';
 }
-window.addEventListener('load', gapiLoad);
-$('#btn-google').onclick=async()=>{
-  if(!gapiReady){ toast('Cargando Google API...'); return; }
-  const auth = gapi.auth2.getAuthInstance();
-  if(!auth.isSignedIn.get()){ await auth.signIn(); gSigned=true; toast('Conectado a Google'); } else { await auth.signOut(); gSigned=false; toast('Desconectado'); }
-  updateGoogleBtn();
-};
-function updateGoogleBtn(){ $('#btn-google').textContent = gSigned? 'Desconectar Google' : 'Conectar Google'; }
-async function syncTaskToCalendar(t){
-  if(!gapiReady){ toast('API no lista'); return; }
-  const auth = gapi.auth2.getAuthInstance(); if(!auth.isSignedIn.get()){ toast('Conéctate a Google primero'); return; }
-  const ev = {
-    summary: t.title,
-    description: (t.desc||'')+`
-Etiquetas: ${(t.tags||[]).join(', ')}`,
-    start: { dateTime: t.start || new Date().toISOString(), timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone },
-    end: { dateTime: t.end || new Date(Date.now()+3600000).toISOString(), timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone },
+
+function saveTask(){
+  const t = {
+    id: editId||Date.now().toString(),
+    title: document.getElementById('task-title').value,
+    desc: document.getElementById('task-desc').value,
+    priority: document.getElementById('task-priority').value,
+    date: document.getElementById('task-date').value,
+    status: 'Por hacer'
   };
-  try{ const res = await gapi.client.calendar.events.insert({ calendarId:'primary', resource: ev }); toast('Evento creado en Calendar'); maybeNotify('📅 Sincronizado', t.title); }catch(e){ console.error(e); alert('Error al sincronizar (revisa credenciales y permisos)'); }
+  if(editId){
+    const i=tasks.findIndex(x=>x.id===editId);
+    tasks[i]=t;
+  } else tasks.push(t);
+  closeModal();
+  render();
 }
 
-// ======= Tema / Atajos =======
-const root = document.documentElement; const themeBtn=$('#btn-theme');
-function setTheme(mode){ if(mode==='dark'){ root.setAttribute('data-theme','dark'); } else { root.removeAttribute('data-theme'); } localStorage.setItem('theme', mode); themeBtn.textContent = mode==='dark'? '☀️' : '🌙'; }
-setTheme(localStorage.getItem('theme')||'');
-themeBtn.onclick=()=> setTheme(root.getAttribute('data-theme')==='dark'? '': 'dark');
-document.addEventListener('keydown',e=>{ if(e.key==='/' && document.activeElement!==q){ e.preventDefault(); q.focus(); } if(e.key==='n' || e.key==='N'){ $('#btn-new').click(); } if(e.key==='d' || e.key==='D'){ themeBtn.click(); } });
+function closeModal(){
+  document.getElementById('modal').style.display='none';
+}
 
-// ======= Stats =======
-function updateStats(){ const total=tasks.length; const done=tasks.filter(t=>t.status==='hecho').length; const overdue=tasks.filter(t=>t.end && new Date(t.end)<new Date() && t.status!=='hecho').length; $('#stats').innerHTML = `Total: <b>${total}</b> • Hechas: <b>${done}</b> • Vencidas: <b style='color:var(--danger)'>${overdue}</b>`; }
+function drag(ev,id){
+  ev.dataTransfer.setData("text", id);
+}
+function drop(ev,status){
+  const id = ev.dataTransfer.getData("text");
+  const t = tasks.find(x=>x.id===id);
+  if(t){t.status=status;}
+  render();
+}
 
-// ======= Vista =======
-function setView(v){ localStorage.setItem('view', v); if(v==='kanban'){ $('#kanban').style.display='flex'; $('#lista').style.display='none'; $('#tab-kanban').classList.add('active'); $('#tab-lista').classList.remove('active'); renderKanban(); } else { $('#kanban').style.display='none'; $('#lista').style.display='block'; $('#tab-lista').classList.add('active'); $('#tab-kanban').classList.remove('active'); renderList(); } }
-$('#tab-kanban').onclick=()=>setView('kanban'); $('#tab-lista').onclick=()=>setView('lista');
-function renderAll(){ const v=localStorage.getItem('view')||'kanban'; if(v==='kanban') renderKanban(); else { renderList(); } updateStats(); }
+function setPriority(id,val){
+  const t = tasks.find(x=>x.id===id);
+  if(t){t.priority=val;}
+  render();
+}
 
-// Init
-(function(){ const v=localStorage.getItem('view')||'kanban'; setView(v); updateStats(); })();
+function inviteUser(){
+  const email = prompt("Correo del usuario:");
+  if(email) location.href=`mailto:${email}?subject=Invitación a Productividad Pro`;
+}
 
+function exportJSON(){
+  const data = JSON.stringify(tasks);
+  const blob = new Blob([data], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href=url; a.download='tareas.json';
+  a.click();
+}
+
+function importJSON(){
+  const inp = document.createElement('input');
+  inp.type='file';
+  inp.onchange=e=>{
+    const file = e.target.files[0];
+    const reader = new FileReader();
+    reader.onload=()=>{
+      tasks=JSON.parse(reader.result);
+      render();
+    };
+    reader.readAsText(file);
+  };
+  inp.click();
+}
+
+function connectGoogle(){
+  alert('Aquí conectarías Google Calendar (configura CLIENT_ID y API_KEY)');
+}
+
+render();
 </script>
 </body>
 </html>
