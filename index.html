@@ -3,67 +3,37 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Productividad Pro — Kanban + Lista</title>
+  <title>Productividad Pro — Kanban + Lista + Invitaciones + Calendar</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js" integrity="sha512-TmQXvRyZlqQ1q1o8GJ5L1Y5RH/s5+1JxqU9kS+Uj+2zpXKx22J6d/FwF7z/g2r5t3/Jj/tJg7C+g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-  <script src="https://accounts.google.com/gsi/client" async defer></script>
-  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://apis.google.com/js/api.js"></script>
   <style>
-    :root{
-      --font: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
-      --bg: #f7f9fc;          --surface: #ffffff;      --muted-surface:#eef1f4;
-      --text: #1f2937;        --muted:#64748b;        --border:#e5e7eb;  
-      --shadow: 0 8px 24px rgba(0,0,0,.08);
-      --primary:#5d6afe;      --primary-600:#4a54d6;  --primary-100:#eef2ff;
-      --success:#22c55e;      --warn:#f59e0b;          --danger:#ef4444;
-      --tag-bg:#e8f5ff;        --tag-text:#2563eb;
-    }
-    .dark{
-      --bg:#0b1220; --surface:#0e1726; --muted-surface:#141c2d;  
-      --text:#e5e7eb; --muted:#94a3b8; --border:#1f2937;  
-      --shadow: 0 8px 24px rgba(0,0,0,.35);
-      --primary:#8b93ff; --primary-600:#737cff; --primary-100:#1a2240;
-      --tag-bg:#0f2a45; --tag-text:#60a5fa;
-    }
-
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{font-family:var(--font);background:var(--bg);margin:0;color:var(--text);}
-
-    /* Header */
+    :root{ --font:'Inter','Segoe UI',-apple-system,BlinkMacSystemFont,sans-serif; --bg:#f7f9fc; --surface:#ffffff; --muted-surface:#eef1f4; --text:#1f2937; --muted:#64748b; --border:#e5e7eb; --shadow:0 8px 24px rgba(0,0,0,.08); --primary:#5d6afe; --primary-600:#4a54d6; --primary-100:#eef2ff; --success:#22c55e; --warn:#f59e0b; --danger:#ef4444; --tag-bg:#e8f5ff; --tag-text:#2563eb; }
+    .dark{ --bg:#0b1220; --surface:#0e1726; --muted-surface:#141c2d; --text:#e5e7eb; --muted:#94a3b8; --border:#1f2937; --shadow:0 8px 24px rgba(0,0,0,.35); --primary:#8b93ff; --primary-600:#737cff; --primary-100:#1a2240; --tag-bg:#0f2a45; --tag-text:#60a5fa; }
+    *{box-sizing:border-box} html,body{height:100%} body{font-family:var(--font);background:var(--bg);margin:0;color:var(--text)}
     .appbar{position:sticky;top:0;z-index:50;background:var(--surface);box-shadow:var(--shadow);padding:12px 16px;display:flex;gap:12px;align-items:center}
     .brand{display:flex;align-items:center;gap:10px;font-weight:700}
     .brand .logo{width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,var(--primary),#00c2ff)}
     .bar-group{display:flex;gap:8px;align-items:center;margin-left:auto}
-    .chip, .btn{border:1px solid var(--border);background:var(--surface);padding:8px 12px;border-radius:10px;cursor:pointer;font-weight:600;color:var(--text)}
-    .btn.primary{background:var(--primary);border-color:transparent;color:#fff;box-shadow:0 6px 14px rgba(93,106,254,.3)}
-    .btn.primary:hover{background:var(--primary-600)}
-    .btn.ghost{background:var(--muted-surface)}
+    .chip,.btn{border:1px solid var(--border);background:var(--surface);padding:8px 12px;border-radius:10px;cursor:pointer;font-weight:600;color:var(--text)}
+    .btn.primary{background:var(--primary);border-color:transparent;color:#fff;box-shadow:0 6px 14px rgba(93,106,254,.3)} .btn.primary:hover{background:var(--primary-600)} .btn.ghost{background:var(--muted-surface)}
     .segmented{display:flex;background:var(--muted-surface);border-radius:10px;padding:4px}
     .segmented button{background:transparent;border:none;padding:8px 12px;border-radius:8px;color:var(--text);font-weight:600;cursor:pointer}
     .segmented button.active{background:var(--primary);color:#fff}
-
-    /* Toolbar */
     .toolbar{display:flex;gap:10px;flex-wrap:wrap;padding:12px 16px}
     .input{display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:8px 12px;min-width:260px}
-    .input input, .input select{border:none;outline:none;background:transparent;color:var(--text);width:100%}
+    .input input,.input select{border:none;outline:none;background:transparent;color:var(--text);width:100%}
     .kbd{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;background:var(--muted-surface);border:1px solid var(--border);border-bottom-width:3px;padding:2px 6px;border-radius:6px}
-
-    /* Main layout */
     .content{padding:16px;display:flex;gap:16px;align-items:flex-start}
     .board{display:flex;gap:16px;flex-wrap:nowrap;overflow:auto;padding-bottom:8px}
     .column{background:var(--surface);min-width:340px;border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow);display:flex;flex-direction:column;max-height:78vh}
     .column header{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;border-bottom:1px solid var(--border);position:sticky;top:0;background:inherit;border-top-left-radius:14px;border-top-right-radius:14px;z-index:1}
     .column header .count{color:var(--muted);font-weight:600}
     .column .list{padding:12px;display:flex;flex-direction:column;gap:12px;overflow:auto}
-
-    /* Cards */
     .task{background:var(--surface);border:1px solid var(--border);border-left:6px solid transparent;border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:10px;cursor:grab}
-    .task[data-priority="Alta"]{border-left-color:var(--danger)}
-    .task[data-priority="Media"]{border-left-color:var(--warn)}
-    .task[data-priority="Baja"]{border-left-color:var(--success)}
+    .task[data-priority="Alta"]{border-left-color:var(--danger)} .task[data-priority="Media"]{border-left-color:var(--warn)} .task[data-priority="Baja"]{border-left-color:var(--success)}
     .task-title{display:flex;gap:8px;align-items:center;font-weight:700}
     .task-title[contenteditable="true"]{outline:none}
     .meta{display:flex;flex-wrap:wrap;gap:8px;color:var(--muted);font-size:.9rem}
@@ -72,19 +42,13 @@
     .tags{display:flex;flex-wrap:wrap;gap:6px}
     .tag{background:var(--tag-bg);color:var(--tag-text);padding:3px 8px;border-radius:999px;font-size:.8rem;border:1px solid rgba(0,0,0,.05)}
     .progress{height:8px;background:var(--muted-surface);border-radius:999px;overflow:hidden}
-    .progress > div{height:100%;background:var(--success);width:0%;transition:width .25s ease}
-
-    .danger{color:var(--danger)}
-    .warn{color:var(--warn)}
-
-    /* List view */
+    .progress>div{height:100%;background:var(--success);width:0%;transition:width .25s ease}
+    .danger{color:var(--danger)} .warn{color:var(--warn)}
     .list-view{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow);overflow:auto}
     .table{min-width:980px;width:100%;border-collapse:separate;border-spacing:0}
     .table thead th{position:sticky;top:0;background:var(--muted-surface);text-align:left;padding:12px;border-bottom:1px solid var(--border)}
     .table tbody td{padding:10px;border-bottom:1px solid var(--border)}
     .row-title{display:flex;align-items:center;gap:8px}
-
-    /* Modal */
     .modal{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;padding:20px;z-index:100}
     .modal.open{display:flex}
     .dialog{width:min(920px,96vw);background:var(--surface);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow);overflow:hidden}
@@ -93,28 +57,22 @@
     .field{display:flex;flex-direction:column;gap:6px}
     .field input,.field select,.field textarea{border:1px solid var(--border);background:var(--muted-surface);padding:10px;border-radius:10px;color:var(--text);font-family:var(--font)}
     .actions{display:flex;gap:8px;justify-content:flex-end;padding:12px 16px;border-top:1px solid var(--border)}
-
-    /* Footer stats */
     .stats{margin-left:16px;color:var(--muted);font-weight:600}
-
-    @media (max-width: 980px){
-      .dialog main{grid-template-columns:1fr}
-      .board{flex-direction:column}
-      .column{min-width:auto}
-    }
+    @media (max-width:980px){ .dialog main{grid-template-columns:1fr} .board{flex-direction:column} .column{min-width:auto} }
   </style>
 </head>
 <body>
   <div class="appbar">
     <div class="brand"><div class="logo"></div>Productividad <span style="color:var(--primary)">Pro</span></div>
-
     <div class="segmented" role="tablist" aria-label="Cambiar vista">
       <button id="btnKanban" class="active" aria-selected="true">Kanban</button>
       <button id="btnLista" aria-selected="false">Lista</button>
     </div>
-
     <div class="bar-group">
-      <button id="btnGoogleSignIn" class="btn ghost" title="Conectar con Google Calendar" style="display: none;">Conectar 🗓️</button>
+      <span id="userChip" class="chip" title="Usuario" style="display:none"></span>
+      <button id="btnInvite" class="btn ghost" title="Invitar por correo" style="display:none">👥 Invitar</button>
+      <button id="btnLogin" class="btn primary">Iniciar sesión</button>
+      <button id="btnLogout" class="btn ghost" style="display:none">Salir</button>
       <button id="btnDark" class="btn ghost" title="Modo oscuro (D)">🌙</button>
       <button id="btnImport" class="btn ghost" title="Importar JSON">↥ Importar</button>
       <button id="btnExport" class="btn ghost" title="Exportar JSON">↧ Exportar</button>
@@ -123,33 +81,10 @@
   </div>
 
   <div class="toolbar">
-    <div class="input" title="Buscar (/)">
-      🔎 <input id="q" placeholder="Buscar por título, etiqueta o colaborador…"/>
-    </div>
-    <div class="input">
-      👤
-      <select id="fAssignee">
-        <option value="">Todos los colaboradores</option>
-      </select>
-    </div>
-    <div class="input">
-      ⚑
-      <select id="fPriority">
-        <option value="">Todas las prioridades</option>
-        <option>Alta</option>
-        <option>Media</option>
-        <option>Baja</option>
-      </select>
-    </div>
-    <div class="input">
-      ⏱️
-      <select id="fSort">
-        <option value="recent">Recientes</option>
-        <option value="dueAsc">Fecha fin ↑</option>
-        <option value="dueDesc">Fecha fin ↓</option>
-        <option value="priority">Prioridad</option>
-      </select>
-    </div>
+    <div class="input" title="Buscar (/)"> 🔎 <input id="q" placeholder="Buscar por título, etiqueta o colaborador…"/></div>
+    <div class="input"> 👤 <select id="fAssignee"><option value="">Todos los colaboradores</option></select></div>
+    <div class="input"> ⚑ <select id="fPriority"><option value="">Todas las prioridades</option><option>Alta</option><option>Media</option><option>Baja</option></select></div>
+    <div class="input"> ⏱️ <select id="fSort"><option value="recent">Recientes</option><option value="dueAsc">Fecha fin ↑</option><option value="dueDesc">Fecha fin ↓</option><option value="priority">Prioridad</option></select></div>
     <div class="stats" id="stats"></div>
     <div style="margin-left:auto;color:var(--muted)">Atajos: <span class="kbd">N</span> nueva · <span class="kbd">/</span> buscar · <span class="kbd">D</span> modo oscuro</div>
   </div>
@@ -158,19 +93,7 @@
     <div id="kanban" class="board" aria-label="Tablero Kanban" role="list" hidden></div>
     <div id="listWrapper" class="list-view" hidden>
       <table class="table" aria-label="Vista en tabla">
-        <thead>
-          <tr>
-            <th>Tarea</th>
-            <th>Estado</th>
-            <th>Inicio</th>
-            <th>Fin</th>
-            <th>Colaborador</th>
-            <th>Prioridad</th>
-            <th>Tiempo</th>
-            <th>Etiquetas</th>
-            <th></th>
-          </tr>
-        </thead>
+        <thead><tr><th>Tarea</th><th>Estado</th><th>Inicio</th><th>Fin</th><th>Colaborador</th><th>Prioridad</th><th>Tiempo</th><th>Etiquetas</th><th></th></tr></thead>
         <tbody id="tbody"></tbody>
       </table>
     </div>
@@ -180,7 +103,10 @@
     <div class="dialog">
       <header>
         <input id="dlg-title" class="task-title" style="flex:1;border:none;background:transparent;font-size:1.6rem" />
-        <button id="dlg-close" class="btn ghost">✕</button>
+        <div style="display:flex;gap:8px">
+          <button id="btnAddCalendar" class="btn ghost" title="Añadir a Google Calendar">📆 Añadir</button>
+          <button id="dlg-close" class="btn ghost">✕</button>
+        </div>
       </header>
       <main>
         <section>
@@ -199,348 +125,155 @@
           </div>
         </section>
         <aside style="display:flex;flex-direction:column;gap:10px">
-          <div class="field">
-            <label>Estado</label>
-            <select id="dlg-status">
-              <option value="por-hacer">Por hacer</option>
-              <option value="en-progreso">En progreso</option>
-              <option value="hecho">Hecho</option>
-            </select>
-          </div>
-          <div class="field">
-            <label>Prioridad</label>
-            <select id="dlg-priority">
-              <option>Alta</option>
-              <option>Media</option>
-              <option>Baja</option>
-            </select>
-          </div>
-          <div class="field">
-            <label>Colaborador</label>
-            <select id="dlg-assignee"></select>
-          </div>
-          <div class="field">
-            <label>Fecha de inicio</label>
-            <input type="date" id="dlg-start"/>
-          </div>
-          <div class="field">
-            <label>Fecha de fin</label>
-            <input type="date" id="dlg-end"/>
-          </div>
+          <div class="field"><label>Estado</label><select id="dlg-status"><option value="por-hacer">Por hacer</option><option value="en-progreso">En progreso</option><option value="hecho">Hecho</option></select></div>
+          <div class="field"><label>Prioridad</label><select id="dlg-priority"><option>Alta</option><option>Media</option><option>Baja</option></select></div>
+          <div class="field"><label>Colaborador</label><select id="dlg-assignee"></select></div>
+          <div class="field"><label>Fecha de inicio</label><input type="date" id="dlg-start"/></div>
+          <div class="field"><label>Fecha de fin</label><input type="date" id="dlg-end"/></div>
           <div class="field">
             <label>Tiempo</label>
-            <div style="display:flex;gap:8px">
-              <input id="dlg-est" type="number" placeholder="Estimado (h)"/>
-              <input id="dlg-log" type="number" placeholder="Registrado (h)"/>
-            </div>
-            <div style="display:flex;gap:8px;margin-top:8px">
-              <button id="dlg-log-0_5" class="btn ghost">+0.5h</button>
-              <button id="dlg-log-1" class="btn ghost">+1h</button>
-              <button id="dlg-log-2" class="btn ghost">+2h</button>
-            </div>
+            <div style="display:flex;gap:8px"><input id="dlg-est" type="number" placeholder="Estimado (h)"/><input id="dlg-log" type="number" placeholder="Registrado (h)"/></div>
+            <div style="display:flex;gap:8px;margin-top:8px"><button id="dlg-log-0_5" class="btn ghost">+0.5h</button><button id="dlg-log-1" class="btn ghost">+1h</button><button id="dlg-log-2" class="btn ghost">+2h</button></div>
           </div>
-          <div class="field">
-            <label>Etiquetas</label>
-            <div id="dlg-tags" class="tags"></div>
-            <div style="display:flex;gap:8px;margin-top:6px">
-              <input id="dlg-new-tag" placeholder="Nueva etiqueta…"/>
-              <button id="dlg-add-tag" class="btn ghost">Añadir</button>
-            </div>
+          <div class="field"><label>Etiquetas</label><div id="dlg-tags" class="tags"></div>
+            <div style="display:flex;gap:8px;margin-top:6px"><input id="dlg-new-tag" placeholder="Nueva etiqueta…"/><button id="dlg-add-tag" class="btn ghost">Añadir</button></div>
           </div>
         </aside>
       </main>
       <div class="actions">
-        <button id="dlg-create-event" class="btn ghost">Añadir a Google 🗓️</button>
         <button id="dlg-delete" class="btn" style="border-color:var(--danger);color:var(--danger)">Eliminar</button>
         <button id="dlg-done" class="btn primary">Guardar</button>
       </div>
     </div>
   </div>
 
-  <script>
-    // ===== Datos de ejemplo y estado =====
-    const initialTasks = [
-      { id: 'task-1', title: 'Diseñar UI', description:'Pantallas principales + estilo', status: 'por-hacer', priority: 'Alta', assignee: 'Victor', startDate: '2025-08-10', endDate: '2025-08-30', estimatedTime: 8, loggedTime: 2, tags: ['Diseño','Frontend'], subtasks: [{ text: 'Wireframes', completed: true }, { text: 'Prototipos Hi-Fi', completed: false }], createdAt: Date.now()-86400000, updatedAt: Date.now()-3600000 },
-      { id: 'task-2', title: 'Definir MVP', description:'Scope + user stories', status: 'por-hacer', priority: 'Media', assignee: 'Victor', startDate: '2025-08-08', endDate: '2025-09-05', estimatedTime: 4, loggedTime: 1, tags: ['Producto'], subtasks: [], createdAt: Date.now()-172800000, updatedAt: Date.now()-7200000 },
-      { id: 'task-3', title: 'Implementar login', description:'JWT + UI + validaciones', status: 'en-progreso', priority: 'Alta', assignee: 'Ana', startDate: '2025-08-15', endDate: '2025-08-25', estimatedTime: 12, loggedTime: 6, tags: ['Desarrollo','Backend'], subtasks: [{ text: 'DB', completed: true }, { text: 'Endpoint auth', completed: false }, { text: 'Form login', completed: false }], createdAt: Date.now()-259200000, updatedAt: Date.now()-5400000 },
-      { id: 'task-4', title: 'Reunión de seguimiento', description:'Sprint sync', status: 'por-hacer', priority: 'Baja', assignee: 'Equipo', startDate: '2025-08-13', endDate: '2025-08-15', estimatedTime: 1, loggedTime: 0, tags: ['Reunión'], subtasks: [], createdAt: Date.now()-432000000, updatedAt: Date.now()-540000 },
-      { id: 'task-5', title: 'Documentación técnica', description:'Arquitectura + ADRs', status: 'hecho', priority: 'Baja', assignee: 'Luis', startDate: '2025-08-05', endDate: '2025-08-10', estimatedTime: 5, loggedTime: 5, tags: ['Documentación'], subtasks: [{ text: 'Esqueleto', completed: true }, { text: 'Arquitectura', completed: true }], createdAt: Date.now()-604800000, updatedAt: Date.now()-860000 }
-    ];
-    
-    // Mapeo de colaboradores a correos electrónicos reales
-    const assigneesWithEmails = {
-      'Victor': 'victor@ejemplo.com',
-      'Ana': 'ana@ejemplo.com',
-      'Luis': 'luis@ejemplo.com',
-      'Carlos': 'carlos@ejemplo.com',
-      'Elena': 'elena@ejemplo.com',
-      'Equipo': 'equipo@ejemplo.com', // Usar un grupo o correo genérico
-      'Sin asignar': null,
+  <script type="module">
+    // ======= 🔧 CONFIGURA TUS CLAVES AQUÍ =======
+    const firebaseConfig = {
+      apiKey: "TU_API_KEY",
+      authDomain: "TU_DOMINIO.firebaseapp.com",
+      projectId: "TU_PROJECT_ID",
+      // opcional: storageBucket, appId, etc.
     };
-    const assignees = Object.keys(assigneesWithEmails);
+    const GOOGLE_API_KEY = "TU_GOOGLE_API_KEY"; // mismo del proyecto GCP
+    const GOOGLE_CLIENT_ID = "TU_CLIENT_ID.apps.googleusercontent.com"; // OAuth Client ID
 
-    let state = {
-      tasks: [],
-      view: localStorage.getItem('view') || 'kanban',
-      q: '',
-      fAssignee: '',
-      fPriority: '',
-      fSort: 'recent',
-      dark: localStorage.getItem('dark') === '1'
-    };
+    // ======= Firebase =======
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js';
+    import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js';
+    import { getFirestore, collection, doc, getDoc, setDoc, updateDoc, addDoc, deleteDoc, onSnapshot, query, orderBy, serverTimestamp, arrayUnion } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js';
 
-    // ===== Google API Setup =====
-    let tokenClient;
-    const DISCOVERY_DOC = 'https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest';
-    const SCOPES = 'https://www.googleapis.com/auth/calendar.events';
-    const CLIENT_ID = 'TU_CLIENT_ID_DE_GOOGLE'; // <--- ¡REEMPLAZA ESTO!
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const provider = new GoogleAuthProvider();
 
-    function handleAuthClick() {
-      if (gapi.client.getToken() === null) {
-        // Pide permiso al usuario
-        tokenClient.requestAccessToken({prompt: 'consent'});
+    // ======= Estado/UI =======
+    const assigneesFallback = ['Sin asignar'];
+    let state = { tasks: [], view: localStorage.getItem('view') || 'kanban', q:'', fAssignee:'', fPriority:'', fSort:'recent', dark: localStorage.getItem('dark')==='1' };
+    const $ = s => document.querySelector(s); const $$ = s => Array.from(document.querySelectorAll(s)); const uid = ()=>'task-'+Math.random().toString(36).slice(2,9);
+    const esc = s => String(s).replace(/[&<>"]+/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]));
+
+    // ======= Board multiusuario =======
+    const url = new URL(location.href);
+    const boardId = url.searchParams.get('board') || 'default';
+    const boardRef = doc(db, 'boards', boardId);
+    const tasksCol = collection(boardRef, 'tasks');
+
+    async function ensureBoard(user){
+      const bd = await getDoc(boardRef);
+      if(!bd.exists()){
+        await setDoc(boardRef, { createdAt: serverTimestamp(), owner: user.email, members:[user.email], title:'Mi tablero' });
       } else {
-        // Intenta obtener un token sin preguntar
-        tokenClient.requestAccessToken({prompt: ''});
-      }
-    }
-
-    async function createGoogleCalendarEvent(task) {
-      if (gapi.client.getToken() === null) {
-        alert('Por favor, conecta tu cuenta de Google para añadir eventos.');
-        return;
-      }
-      
-      const assigneeEmail = assigneesWithEmails[task.assignee];
-      if (!assigneeEmail) {
-        alert(`No hay un correo electrónico asociado a "${task.assignee}".`);
-        return;
-      }
-      if (!task.endDate) {
-        alert('Por favor, establece una fecha de fin para crear el evento.');
-        return;
-      }
-
-      // Preparar el evento
-      const event = {
-        'summary': `Tarea: ${task.title}`,
-        'description': task.description || '',
-        'start': { 'date': task.endDate },
-        'end': { 'date': task.endDate },
-        'attendees': [
-          { 'email': gapi.client.getToken().email }, // El usuario autenticado
-          { 'email': assigneeEmail }
-        ],
-        'reminders': {
-          'useDefault': false,
-          'overrides': [
-            { 'method': 'email', 'minutes': 24 * 60 },
-            { 'method': 'popup', 'minutes': 10 }
-          ]
+        const d = bd.data();
+        if(!(d.members||[]).includes(user.email)){
+          // acceso denegado por reglas; aquí solo UI
+          alert('No tienes acceso a este tablero. Pide invitación al propietario.');
         }
-      };
-
-      try {
-        const response = await gapi.client.calendar.events.insert({
-          'calendarId': 'primary',
-          'resource': event,
-        });
-        console.log('Evento creado:', response.result);
-        alert(`Evento de calendario creado para ${task.assignee}.`);
-      } catch (err) {
-        console.error('Error al crear el evento:', err);
-        alert('No se pudo crear el evento en Google Calendar. Asegúrate de tener los permisos correctos.');
       }
     }
 
-    // Funciones de inicialización de Google
-    function gsiLoaded() {
-      tokenClient = google.accounts.oauth2.initTokenClient({
-        client_id: CLIENT_ID,
-        scope: SCOPES,
-        callback: (resp) => {
-          if (resp.error !== undefined) {
-            console.error('Error de autenticación:', resp);
-            alert('No se pudo conectar con Google. Revisa los permisos.');
-          } else {
-            console.log('Conexión con Google exitosa.');
-          }
-        },
-      });
-      $('#btnGoogleSignIn').style.display = 'inline-block';
+    async function inviteByEmail(){
+      const email = prompt('Correo de la persona a invitar:');
+      if(!email) return;
+      await updateDoc(boardRef, { members: arrayUnion(email) });
+      alert('Invitado. Comparte también este enlace: '+ location.origin + location.pathname + '?board=' + boardId);
     }
 
-    function gapiLoaded() {
-      gapi.load('client', async () => {
-        await gapi.client.init({
-          discoveryDocs: [DISCOVERY_DOC],
+    // ======= Persistencia Firestore (RT) =======
+    let unsubTasks = null;
+    function startTasksListener(){
+      if(unsubTasks) unsubTasks();
+      unsubTasks = onSnapshot(query(tasksCol, orderBy('updatedAt','desc')), (snap)=>{
+        state.tasks = snap.docs.map(d=> ({ id:d.id, ...d.data() }));
+        render();
+      });
+    }
+
+    async function saveTask(t){ await setDoc(doc(tasksCol, t.id), { ...t, updatedAt: serverTimestamp() }, { merge:true }); }
+    async function deleteTask(id){ await deleteDoc(doc(tasksCol,id)); }
+
+    // ======= Google Calendar (gapi) =======
+    function initGapi(){
+      return new Promise(resolve=>{
+        gapi.load('client:auth2', async ()=>{
+          await gapi.client.init({ apiKey: GOOGLE_API_KEY, clientId: GOOGLE_CLIENT_ID, discoveryDocs:["https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest"], scope:"https://www.googleapis.com/auth/calendar.events" });
+          resolve();
         });
-        // Si ya hay un token, podríamos intentar listarlos
       });
     }
 
-    // ===== Utilidades =====
-    const $ = s => document.querySelector(s);
-    const $$ = s => Array.from(document.querySelectorAll(s));
-    const uid = () => 'task-' + Math.random().toString(36).slice(2,9);
-
-    function save(){ localStorage.setItem('tasks', JSON.stringify(state.tasks)); }
-    function load(){
-      const raw = localStorage.getItem('tasks');
-      state.tasks = raw ? JSON.parse(raw) : initialTasks;
+    async function ensureCalendarAuth(){
+      await initGapi();
+      const i = gapi.auth2.getAuthInstance();
+      if(!i.isSignedIn.get()) await i.signIn();
     }
 
-    function setDark(on){
-      state.dark = !!on; localStorage.setItem('dark', on? '1':'0');
-      document.documentElement.classList.toggle('dark', state.dark);
+    async function addTaskToCalendar(task){
+      if(!(task?.startDate) || !(task?.endDate)){
+        alert('La tarea necesita fecha de inicio y fin para crear evento.');
+        return;
+      }
+      await ensureCalendarAuth();
+      const event = { summary: task.title, description: task.description||'', start:{ date: task.startDate }, end:{ date: task.endDate } };
+      await gapi.client.calendar.events.insert({ calendarId:'primary', resource:event });
+      alert('Añadido a tu Google Calendar');
     }
 
-    function fmt(date){ return date ? date : '' }
-    function initials(name){
-      const parts = (name||' ? ').split(' ').filter(Boolean);
-      return (parts[0]?.[0]||'') + (parts[1]?.[0]||'');
-    }
-
+    // ======= Lógica UI (tu app original con pequeños cambios) =======
+    function setDark(on){ state.dark=!!on; localStorage.setItem('dark', on?'1':'0'); document.documentElement.classList.toggle('dark', state.dark); }
+    function fmt(date){ return date? date: '' }
+    function initials(name){ const parts=(name||' ? ').split(' ').filter(Boolean); return (parts[0]?.[0]||'')+(parts[1]?.[0]||''); }
     function priorityWeight(p){ return p==='Alta'?3:p==='Media'?2:1 }
-    function overdue(task){ return task.endDate && new Date(task.endDate) < new Date() && task.status !== 'hecho' }
-    function dueSoon(task){
-      if(!task.endDate) return false;
-      const d = new Date(task.endDate) - new Date();
-      return d > 0 && d <= 1000*60*60*24*2 && task.status!=='hecho'; // 48h
-    }
+    function overdue(task){ return task.endDate && new Date(task.endDate) < new Date() && task.status!=='hecho' }
+    function dueSoon(task){ if(!task.endDate) return false; const d = new Date(task.endDate)-new Date(); return d>0 && d<=1000*60*60*24*2 && task.status!=='hecho'; }
 
-    // ===== Filtros y orden =====
-    function visibleTasks(){
-      let t = [...state.tasks];
-      if(state.q){
-        const q = state.q.toLowerCase();
-        t = t.filter(x => x.title.toLowerCase().includes(q)
-          || (x.assignee||'').toLowerCase().includes(q)
-          || (x.tags||[]).some(tag => tag.toLowerCase().includes(q))
-          || (x.description||'').toLowerCase().includes(q)
-        );
-      }
-      if(state.fAssignee){ t = t.filter(x => x.assignee === state.fAssignee); }
-      if(state.fPriority){ t = t.filter(x => x.priority === state.fPriority); }
+    function visibleTasks(){ let t=[...state.tasks]; if(state.q){ const q=state.q.toLowerCase(); t=t.filter(x=> x.title.toLowerCase().includes(q) || (x.assignee||'').toLowerCase().includes(q) || (x.tags||[]).some(tag=> tag.toLowerCase().includes(q)) || (x.description||'').toLowerCase().includes(q)); }
+      if(state.fAssignee){ t=t.filter(x=> x.assignee===state.fAssignee); }
+      if(state.fPriority){ t=t.filter(x=> x.priority===state.fPriority); }
+      switch(state.fSort){ case 'dueAsc': t.sort((a,b)=> (a.endDate||'')>(b.endDate||'')?1:-1); break; case 'dueDesc': t.sort((a,b)=> (a.endDate||'')<(b.endDate||'')?1:-1); break; case 'priority': t.sort((a,b)=> priorityWeight(b.priority)-priorityWeight(a.priority)); break; default: t.sort((a,b)=> (b.updatedAt?.toMillis?.()||0)-(a.updatedAt?.toMillis?.()||0)); }
+      return t; }
 
-      switch(state.fSort){
-        case 'dueAsc': t.sort((a,b)=> (a.endDate||'') > (b.endDate||'') ? 1 : -1); break;
-        case 'dueDesc': t.sort((a,b)=> (a.endDate||'') < (b.endDate||'') ? 1 : -1); break;
-        case 'priority': t.sort((a,b)=> priorityWeight(b.priority)-priorityWeight(a.priority)); break;
-        default: t.sort((a,b)=> (b.updatedAt||0)-(a.updatedAt||0));
-      }
-      return t;
-    }
-
-    // ===== Render raíz (un solo motor) =====
     function render(){
-      // Vistas
-      $('#btnKanban').classList.toggle('active', state.view==='kanban');
-      $('#btnLista').classList.toggle('active', state.view==='lista');
-      $('#kanban').hidden = state.view!=='kanban';
-      $('#listWrapper').hidden = state.view!=='lista';
-      localStorage.setItem('view', state.view);
-
-      // Filtros
-      $('#q').value = state.q; $('#fAssignee').value = state.fAssignee; $('#fPriority').value = state.fPriority; $('#fSort').value = state.fSort;
-
-      // Stats
-      const total = state.tasks.length;
-      const done = state.tasks.filter(t=>t.status==='hecho').length;
-      const ovd = state.tasks.filter(overdue).length;
-      $('#stats').textContent = `Total: ${total} · Hechas: ${done} · Vencidas: ${ovd}`;
-
-      // Rellenar colaboradores filtro y modal
-      if($('#fAssignee').options.length <= 1){
-        for(const a of assignees){ const o=document.createElement('option'); o.textContent=a; o.value=a; $('#fAssignee').appendChild(o); }
-      }
-      const sel = $('#dlg-assignee'); if(sel && sel.options.length===0){
-        for(const a of assignees){ const o=document.createElement('option'); o.textContent=a; o.value=a; sel.appendChild(o); }
-      }
-
-      const data = visibleTasks();
-      state.view==='kanban' ? renderKanban(data) : renderList(data);
+      $('#btnKanban').classList.toggle('active', state.view==='kanban'); $('#btnLista').classList.toggle('active', state.view!=='kanban');
+      $('#kanban').hidden = state.view!=='kanban'; $('#listWrapper').hidden = state.view!=='lista'; localStorage.setItem('view', state.view);
+      $('#q').value=state.q; $('#fAssignee').value=state.fAssignee; $('#fPriority').value=state.fPriority; $('#fSort').value=state.fSort;
+      const total=state.tasks.length; const done=state.tasks.filter(t=>t.status==='hecho').length; const ovd=state.tasks.filter(overdue).length; $('#stats').textContent = `Total: ${total} · Hechas: ${done} · Vencidas: ${ovd}`;
+      // Rellenar colaboradores (desde miembros + asignaciones)
+      const assignees = new Set(assigneesFallback);
+      state.tasks.forEach(t=> assignees.add(t.assignee||'Sin asignar'));
+      const sel=$('#fAssignee'); if(sel.options.length<=1){ for(const a of assignees){ const o=document.createElement('option'); o.textContent=a; o.value=a; sel.appendChild(o);} }
+      const sel2=$('#dlg-assignee'); if(sel2 && sel2.options.length===0){ for(const a of assignees){ const o=document.createElement('option'); o.textContent=a; o.value=a; sel2.appendChild(o);} }
+      const data = visibleTasks(); state.view==='kanban'? renderKanban(data): renderList(data);
     }
 
-    // ===== Render Kanban =====
-    const statusDefs = [
-      {key:'por-hacer', label:'Por hacer'},
-      {key:'en-progreso', label:'En progreso'},
-      {key:'hecho', label:'Hecho'}
-    ];
+    const statusDefs=[{key:'por-hacer',label:'Por hacer'},{key:'en-progreso',label:'En progreso'},{key:'hecho',label:'Hecho'}];
+    function labelStatus(s){ const map={'por-hacer':'Por hacer','en-progreso':'En progreso','hecho':'Hecho'}; return map[s]||s; }
+    function badgePriority(p,plain){ const cls=p==='Alta'?'danger':p==='Media'?'warn':'success'; return plain? `⚑ <strong class="${cls}">${p}</strong>`: `<span class="${cls}">${p}</span>`; }
 
-    function renderKanban(data){
-      const root = $('#kanban');
-      root.innerHTML = '';
-      statusDefs.forEach(col => {
-        const column = document.createElement('section');
-        column.className = 'column';
-        column.dataset.status = col.key;
-        const items = data.filter(t => t.status===col.key);
-        column.innerHTML = `
-          <header>
-            <div><strong>${col.label}</strong></div>
-            <div class="count">${items.length}</div>
-          </header>
-          <div class="list" role="list"></div>
-          <div style="padding:12px"><button class="btn ghost" data-add="${col.key}">＋ Añadir</button></div>
-        `;
-        root.appendChild(column);
-
-        const list = column.querySelector('.list');
-        items.forEach(t => list.appendChild(taskCard(t)));
-
-        // Drag & drop
-        new Sortable(list, {
-          group: 'kanban', animation: 180, ghostClass:'ghost',
-          onAdd: (evt)=>{ const id = evt.item.dataset.id; updateTask(id,{status: col.key}); },
-          onUpdate: ()=>{ touch(list); }
-        });
-      });
-
-      // Añadir nueva en columna
-      $$('#kanban [data-add]').forEach(btn=> btn.onclick = ()=> createTask(btn.dataset.add));
-    }
-
-    // ===== Render Lista =====
-    function renderList(data){
-      const tbody = $('#tbody'); tbody.innerHTML='';
-      for(const t of data){
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td>
-            <div class="row-title">
-              <input type="checkbox" ${t.status==='hecho'?'checked':''} data-toggle-done="${t.id}" title="Marcar como hecho"/>
-              <span class="task-title" data-open="${t.id}" style="cursor:pointer">${esc(t.title)}</span>
-            </div>
-          </td>
-          <td>${labelStatus(t.status)}</td>
-          <td>${fmt(t.startDate)}</td>
-          <td>${fmt(t.endDate)} ${overdue(t)?'<span class="danger">●</span>': dueSoon(t)?'<span class="warn">●</span>':''}</td>
-          <td><span class="avatar" title="${t.assignee||''}">${initials(t.assignee||'')}</span></td>
-          <td>${badgePriority(t.priority)}</td>
-          <td>${t.estimatedTime||0}h / ${t.loggedTime||0}h</td>
-          <td>${(t.tags||[]).map(tag => `<span class="tag">${esc(tag)}</span>`).join(' ')}</td>
-          <td><button class="btn ghost" data-open="${t.id}">Abrir</button></td>
-        `;
-        tbody.appendChild(tr);
-      }
-
-      // Eventos fila
-      $$('[data-open]').forEach(b=> b.onclick = ()=> openDialog(b.getAttribute('data-open')));
-      $$('[data-toggle-done]').forEach(chk=> chk.onchange = ()=> {
-        const id = chk.getAttribute('data-toggle-done');
-        updateTask(id,{status: chk.checked? 'hecho':'por-hacer'});
-      });
-    }
-
-    // ===== Tarjeta de tarea =====
-    function taskCard(t){
-      const el = document.createElement('article');
-      el.className='task'; el.dataset.id=t.id; el.setAttribute('data-priority',t.priority);
-      const completed = (t.subtasks||[]).filter(s=>s.completed).length;
-      const percent = (t.subtasks&&t.subtasks.length)? Math.round(100*completed/t.subtasks.length) : 0;
-      el.innerHTML = `
+    function taskCard(t){ const el=document.createElement('article'); el.className='task'; el.dataset.id=t.id; el.setAttribute('data-priority',t.priority);
+      const completed=(t.subtasks||[]).filter(s=>s.completed).length; const percent=(t.subtasks&&t.subtasks.length)? Math.round(100*completed/t.subtasks.length):0;
+      el.innerHTML=`
         <div class="task-title" contenteditable="true" spellcheck="false" data-edit-title="${t.id}">${esc(t.title)}</div>
         <div class="meta">
           <span class="pill" title="${t.assignee||''}"><span class="avatar">${initials(t.assignee||'')}</span> ${esc(t.assignee||'')}</span>
@@ -554,169 +287,91 @@
         <div style="display:flex;gap:8px">
           <button class="btn ghost" data-open="${t.id}">Abrir</button>
           <button class="btn ghost" data-quick-log="${t.id}">+0.5h</button>
+          <button class="btn ghost" data-cal="${t.id}">📆</button>
           <button class="btn ghost" data-del="${t.id}" style="margin-left:auto;color:var(--danger);border-color:var(--danger)">Eliminar</button>
-        </div>
-      `;
-
-      // Inline edit
-      const titleEl = el.querySelector('[data-edit-title]');
-      titleEl.addEventListener('blur', ()=> {
-        const v = titleEl.textContent.trim(); if(v && v!==t.title) updateTask(t.id,{title:v}); else titleEl.textContent = t.title;
-      });
+        </div>`;
+      const titleEl=el.querySelector('[data-edit-title]');
+      titleEl.addEventListener('blur', ()=>{ const v=titleEl.textContent.trim(); if(v && v!==t.title) updateTask(t.id,{title:v}); else titleEl.textContent=t.title; });
       titleEl.addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); titleEl.blur(); }});
+      el.querySelector('[data-open]').onclick=()=> openDialog(t.id);
+      el.querySelector('[data-quick-log]').onclick=()=> updateTask(t.id,{loggedTime:(t.loggedTime||0)+0.5});
+      el.querySelector('[data-del]').onclick=()=> confirmDelete(t.id);
+      el.querySelector('[data-cal]').onclick=()=> addTaskToCalendar(state.tasks.find(x=>x.id===t.id));
+      return el; }
 
-      el.querySelector('[data-open]').onclick = ()=> openDialog(t.id);
-      el.querySelector('[data-quick-log]').onclick = ()=> updateTask(t.id,{loggedTime: (t.loggedTime||0)+0.5});
-      el.querySelector('[data-del]').onclick = ()=> confirmDelete(t.id);
+    function renderKanban(data){ const root=$('#kanban'); root.innerHTML=''; statusDefs.forEach(col=>{ const column=document.createElement('section'); column.className='column'; column.dataset.status=col.key;
+        const items=data.filter(t=>t.status===col.key);
+        column.innerHTML=`<header><div><strong>${col.label}</strong></div><div class="count">${items.length}</div></header><div class="list" role="list"></div><div style="padding:12px"><button class="btn ghost" data-add="${col.key}">＋ Añadir</button></div>`;
+        root.appendChild(column); const list=column.querySelector('.list'); items.forEach(t=> list.appendChild(taskCard(t)));
+        new Sortable(list,{ group:'kanban',animation:180,ghostClass:'ghost', onAdd:(evt)=>{ const id=evt.item.dataset.id; updateTask(id,{status:col.key}); }, onUpdate:()=>{} }); });
+      $$('#kanban [data-add]').forEach(btn=> btn.onclick=()=> createTask(btn.dataset.add)); }
 
-      return el;
-    }
+    function renderList(data){ const tbody=$('#tbody'); tbody.innerHTML=''; for(const t of data){ const tr=document.createElement('tr'); tr.innerHTML=`
+          <td><div class="row-title"><input type="checkbox" ${t.status==='hecho'?'checked':''} data-toggle-done="${t.id}" title="Marcar como hecho"/><span class="task-title" data-open="${t.id}" style="cursor:pointer">${esc(t.title)}</span></div></td>
+          <td>${labelStatus(t.status)}</td>
+          <td>${fmt(t.startDate)}</td>
+          <td>${fmt(t.endDate)} ${overdue(t)?'<span class="danger">●</span>': dueSoon(t)?'<span class="warn">●</span>':''}</td>
+          <td><span class="avatar" title="${t.assignee||''}">${initials(t.assignee||'')}</span></td>
+          <td>${badgePriority(t.priority)}</td>
+          <td>${t.estimatedTime||0}h / ${t.loggedTime||0}h</td>
+          <td>${(t.tags||[]).map(tag=> `<span class="tag">${esc(tag)}</span>`).join(' ')}</td>
+          <td><button class="btn ghost" data-open="${t.id}">Abrir</button></td>`; tbody.appendChild(tr);} $$('[data-open]').forEach(b=> b.onclick=()=> openDialog(b.getAttribute('data-open')));
+      $$('[data-toggle-done]').forEach(chk=> chk.onchange = ()=>{ const id=chk.getAttribute('data-toggle-done'); updateTask(id,{status: chk.checked?'hecho':'por-hacer'}); }); }
 
-    function labelStatus(s){
-      const map={ 'por-hacer':'Por hacer', 'en-progreso':'En progreso', 'hecho':'Hecho'}; return map[s]||s;
-    }
-    function badgePriority(p,plain){
-      const cls = p==='Alta'?'danger':p==='Media'?'warn':'success';
-      return plain? `⚑ <strong class="${cls}">${p}</strong>` : `<span class="${cls}">${p}</span>`;
-    }
-
-    function esc(s){return String(s).replace(/[&<>"]+/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]))}
-
-    // ===== CRUD =====
-    function createTask(status='por-hacer'){
-      const t = { id: uid(), title:'Nueva tarea', description:'', status, priority:'Media', assignee:'Sin asignar', startDate: new Date().toISOString().slice(0,10), endDate:'', estimatedTime:0, loggedTime:0, tags:[], subtasks:[], createdAt: Date.now(), updatedAt: Date.now() };
-      state.tasks.unshift(t); save(); render(); openDialog(t.id);
-    }
-    function updateTask(id, patch){
-      const i = state.tasks.findIndex(x=>x.id===id); if(i<0) return;
-      state.tasks[i] = { ...state.tasks[i], ...patch, updatedAt: Date.now() };
-      save(); render();
-    }
-    function removeTask(id){
-      state.tasks = state.tasks.filter(x=>x.id!==id); save(); render();
-    }
-    function confirmDelete(id){
-      if(confirm('¿Eliminar esta tarea?')) removeTask(id);
-    }
+    // ===== CRUD (usa Firestore) =====
+    function createTask(status='por-hacer'){ const t = { id: uid(), title:'Nueva tarea', description:'', status, priority:'Media', assignee:'Sin asignar', startDate: new Date().toISOString().slice(0,10), endDate:'', estimatedTime:0, loggedTime:0, tags:[], subtasks:[], createdAt: serverTimestamp(), updatedAt: serverTimestamp() }; saveTask(t); openDialog(t.id); }
+    async function updateTask(id, patch){ const now = serverTimestamp(); await saveTask({ id, ...patch, updatedAt: now }); }
+    async function removeTask(id){ await deleteTask(id); }
+    function confirmDelete(id){ if(confirm('¿Eliminar esta tarea?')) removeTask(id); }
 
     // ===== Modal =====
-    let currentId = null;
-    function openDialog(id){
-      const t = state.tasks.find(x=>x.id===id); if(!t) return;
-      currentId = id; $('#modal').classList.add('open');
-      $('#dlg-title').value = t.title; $('#dlg-desc').value = t.description||'';
-      $('#dlg-status').value = t.status; $('#dlg-priority').value = t.priority; $('#dlg-assignee').value = t.assignee||'';
-      $('#dlg-start').value = t.startDate||''; $('#dlg-end').value = t.endDate||'';
-      $('#dlg-est').value = t.estimatedTime||0; $('#dlg-log').value = t.loggedTime||0;
-
-      // Tags
-      const tags = $('#dlg-tags'); tags.innerHTML='';
-      (t.tags||[]).forEach(tag=>{
-        const s = document.createElement('span'); s.className='tag'; s.textContent=tag; s.style.cursor='pointer'; s.title='Click para quitar';
-        s.onclick=()=> { updateTask(id,{ tags: (t.tags||[]).filter(x=>x!==tag) }); openDialog(id); };
-        tags.appendChild(s);
-      });
-
-      // Subtareas
-      const ul = $('#dlg-subtasks'); ul.innerHTML='';
-      (t.subtasks||[]).forEach((s,idx)=>{
-        const li = document.createElement('li');
-        li.innerHTML = `<label style="display:flex;gap:8px;align-items:center"><input type="checkbox" ${s.completed?'checked':''} data-sub="${idx}"><input value="${esc(s.text)}" data-subtext="${idx}" style="flex:1"/></label>`;
-        ul.appendChild(li);
-      });
-      const tot = (t.subtasks||[]).length, done=(t.subtasks||[]).filter(x=>x.completed).length; const pct = tot? Math.round(100*done/tot) : 0; $('#dlg-progress').style.width = pct+'%';
-
-      // Evento del botón de Google Calendar
-      $('#dlg-create-event').onclick = () => createGoogleCalendarEvent(t);
+    let currentId=null;
+    function openDialog(id){ const t=state.tasks.find(x=>x.id===id); if(!t) return; currentId=id; $('#modal').classList.add('open'); $('#dlg-title').value=t.title; $('#dlg-desc').value=t.description||''; $('#dlg-status').value=t.status; $('#dlg-priority').value=t.priority; $('#dlg-assignee').value=t.assignee||''; $('#dlg-start').value=t.startDate||''; $('#dlg-end').value=t.endDate||''; $('#dlg-est').value=t.estimatedTime||0; $('#dlg-log').value=t.loggedTime||0;
+      const tags=$('#dlg-tags'); tags.innerHTML=''; (t.tags||[]).forEach(tag=>{ const s=document.createElement('span'); s.className='tag'; s.textContent=tag; s.style.cursor='pointer'; s.title='Click para quitar'; s.onclick=()=>{ const nt=(t.tags||[]).filter(x=>x!==tag); updateTask(id,{tags:nt}); openDialog(id); }; tags.appendChild(s); });
+      const ul=$('#dlg-subtasks'); ul.innerHTML=''; (t.subtasks||[]).forEach((s,idx)=>{ const li=document.createElement('li'); li.innerHTML=`<label style="display:flex;gap:8px;align-items:center"><input type="checkbox" ${s.completed?'checked':''} data-sub="${idx}"><input value="${esc(s.text)}" data-subtext="${idx}" style="flex:1"/></label>`; ul.appendChild(li); });
+      const tot=(t.subtasks||[]).length, done=(t.subtasks||[]).filter(x=>x.completed).length; const pct=tot? Math.round(100*done/tot):0; $('#dlg-progress').style.width=pct+'%';
+      $('#btnAddCalendar').onclick=()=> addTaskToCalendar(t);
     }
-
     function closeDialog(){ currentId=null; $('#modal').classList.remove('open'); }
 
-    // Modal events
-    $('#dlg-close').onclick = closeDialog;
-    $('#dlg-done').onclick = ()=>{
-      if(!currentId) return; const patch={
-        title: $('#dlg-title').value.trim()||'Sin título',
-        description: $('#dlg-desc').value,
-        status: $('#dlg-status').value,
-        priority: $('#dlg-priority').value,
-        assignee: $('#dlg-assignee').value,
-        startDate: $('#dlg-start').value,
-        endDate: $('#dlg-end').value,
-        estimatedTime: Number($('#dlg-est').value||0),
-        loggedTime: Number($('#dlg-log').value||0)
-      }; updateTask(currentId, patch); closeDialog();
-    };
-    $('#dlg-delete').onclick = ()=> { if(currentId){ confirmDelete(currentId); closeDialog(); } };
+    $('#dlg-close').onclick=closeDialog;
+    $('#dlg-done').onclick=()=>{ if(!currentId) return; const patch={ title: $('#dlg-title').value.trim()||'Sin título', description: $('#dlg-desc').value, status: $('#dlg-status').value, priority: $('#dlg-priority').value, assignee: $('#dlg-assignee').value, startDate: $('#dlg-start').value, endDate: $('#dlg-end').value, estimatedTime: Number($('#dlg-est').value||0), loggedTime: Number($('#dlg-log').value||0) }; updateTask(currentId, patch); closeDialog(); };
+    $('#dlg-delete').onclick=()=>{ if(currentId){ confirmDelete(currentId); closeDialog(); } };
 
-    // Subtareas y tags desde modal
-    $('#dlg-add-sub').onclick = ()=>{ if(!currentId) return; const v=$('#dlg-new-sub').value.trim(); if(!v) return; const t = state.tasks.find(x=>x.id===currentId); t.subtasks.push({text:v,completed:false}); updateTask(currentId,{subtasks:t.subtasks}); $('#dlg-new-sub').value=''; openDialog(currentId); };
-    $('#dlg-subtasks').addEventListener('change', (e)=>{
-      if(!currentId) return; const t = state.tasks.find(x=>x.id===currentId);
-      if(e.target.matches('[data-sub]')){ const i=Number(e.target.getAttribute('data-sub')); t.subtasks[i].completed = e.target.checked; updateTask(currentId,{subtasks:t.subtasks}); openDialog(currentId); }
-    });
-    $('#dlg-subtasks').addEventListener('blur', (e)=>{
-      if(!currentId) return; if(e.target.matches('[data-subtext]')){ const i=Number(e.target.getAttribute('data-subtext')); const t = state.tasks.find(x=>x.id===currentId); t.subtasks[i].text = e.target.value; updateTask(currentId,{subtasks:t.subtasks}); }
-    }, true);
-    $('#dlg-add-tag').onclick = ()=>{ if(!currentId) return; const v=$('#dlg-new-tag').value.trim(); if(!v) return; const t= state.tasks.find(x=>x.id===currentId); if(!t.tags.includes(v)){ t.tags.push(v); updateTask(currentId,{tags:t.tags}); $('#dlg-new-tag').value=''; openDialog(currentId);} };
-
-    // Quick log desde modal
-    $('#dlg-log-0_5').onclick = ()=>{ if(!currentId) return; const t=state.tasks.find(x=>x.id===currentId); updateTask(currentId,{loggedTime:(t.loggedTime||0)+0.5}); openDialog(currentId); };
-    $('#dlg-log-1').onclick = ()=>{ if(!currentId) return; const t=state.tasks.find(x=>x.id===currentId); updateTask(currentId,{loggedTime:(t.loggedTime||0)+1}); openDialog(currentId); };
-    $('#dlg-log-2').onclick = ()=>{ if(!currentId) return; const t=state.tasks.find(x=>x.id===currentId); updateTask(currentId,{loggedTime:(t.loggedTime||0)+2}); openDialog(currentId); };
-
-    // Cerrar modal al fondo
+    $('#dlg-add-sub').onclick=()=>{ if(!currentId) return; const v=$('#dlg-new-sub').value.trim(); if(!v) return; const t=state.tasks.find(x=>x.id===currentId) || { subtasks:[] }; const subt=[...(t.subtasks||[]), {text:v, completed:false}]; updateTask(currentId,{subtasks:subt}); $('#dlg-new-sub').value=''; openDialog(currentId); };
+    $('#dlg-subtasks').addEventListener('change', (e)=>{ if(!currentId) return; const t=state.tasks.find(x=>x.id===currentId); if(e.target.matches('[data-sub]')){ const i=Number(e.target.getAttribute('data-sub')); const subt=[...t.subtasks]; subt[i]={...subt[i], completed:e.target.checked}; updateTask(currentId,{subtasks:subt}); openDialog(currentId); } });
+    $('#dlg-subtasks').addEventListener('blur', (e)=>{ if(!currentId) return; if(e.target.matches('[data-subtext]')){ const i=Number(e.target.getAttribute('data-subtext')); const t=state.tasks.find(x=>x.id===currentId); const subt=[...t.subtasks]; subt[i]={...subt[i], text:e.target.value}; updateTask(currentId,{subtasks:subt}); } }, true);
+    $('#dlg-add-tag').onclick=()=>{ if(!currentId) return; const v=$('#dlg-new-tag').value.trim(); if(!v) return; const t=state.tasks.find(x=>x.id===currentId) || { tags:[] }; const tags=[...(t.tags||[])]; if(!tags.includes(v)){ tags.push(v); updateTask(currentId,{tags}); $('#dlg-new-tag').value=''; openDialog(currentId); } };
+    $('#dlg-log-0_5').onclick=()=>{ if(!currentId) return; const t=state.tasks.find(x=>x.id===currentId); updateTask(currentId,{loggedTime:(t.loggedTime||0)+0.5}); openDialog(currentId); };
+    $('#dlg-log-1').onclick=()=>{ if(!currentId) return; const t=state.tasks.find(x=>x.id===currentId); updateTask(currentId,{loggedTime:(t.loggedTime||0)+1}); openDialog(currentId); };
+    $('#dlg-log-2').onclick=()=>{ if(!currentId) return; const t=state.tasks.find(x=>x.id===currentId); updateTask(currentId,{loggedTime:(t.loggedTime||0)+2}); openDialog(currentId); };
     $('#modal').addEventListener('click', (e)=>{ if(e.target.id==='modal') closeDialog(); });
 
     // ===== Eventos globales =====
-    $('#btnNew').onclick = ()=> createTask(state.view==='kanban' ? 'por-hacer' : 'por-hacer');
-    $('#btnKanban').onclick = ()=> { state.view='kanban'; render(); };
-    $('#btnLista').onclick = ()=> { state.view='lista'; render(); };
+    $('#btnNew').onclick=()=> createTask('por-hacer');
+    $('#btnKanban').onclick=()=>{ state.view='kanban'; render(); };
+    $('#btnLista').onclick=()=>{ state.view='lista'; render(); };
+    $('#q').addEventListener('input', e=>{ state.q=e.target.value; render(); });
+    $('#fAssignee').onchange=e=>{ state.fAssignee=e.target.value; render(); };
+    $('#fPriority').onchange=e=>{ state.fPriority=e.target.value; render(); };
+    $('#fSort').onchange=e=>{ state.fSort=e.target.value; render(); };
+    $('#btnDark').onclick=()=> setDark(!state.dark);
 
-    // Filtros
-    $('#q').addEventListener('input', e=>{ state.q = e.target.value; render(); });
-    $('#fAssignee').onchange = e=> { state.fAssignee = e.target.value; render(); };
-    $('#fPriority').onchange = e=> { state.fPriority = e.target.value; render(); };
-    $('#fSort').onchange = e=> { state.fSort = e.target.value; render(); };
+    // Import/Export (opera sobre estado visible y sube a Firestore)
+    $('#btnExport').onclick=()=>{ const blob=new Blob([JSON.stringify(state.tasks,null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`tasks-${boardId}.json`; a.click(); URL.revokeObjectURL(a.href); };
+    $('#btnImport').onclick=()=>{ const inp=document.createElement('input'); inp.type='file'; inp.accept='application/json'; inp.onchange=()=>{ const file=inp.files[0]; if(!file) return; const fr=new FileReader(); fr.onload=async()=>{ try{ const arr=JSON.parse(fr.result); if(Array.isArray(arr)){ for(const t of arr){ if(!t.id) t.id=uid(); await saveTask({ ...t, updatedAt: serverTimestamp() }); } alert('Importadas a Firestore'); } else alert('JSON inválido'); } catch(e){ alert('No se pudo leer el JSON'); } }; fr.readAsText(file); }; inp.click(); };
 
-    // Modo oscuro
-    $('#btnDark').onclick = ()=> setDark(!state.dark);
+    document.addEventListener('keydown', (e)=>{ if(e.key.toLowerCase()==='n' && !e.ctrlKey && !e.metaKey){ e.preventDefault(); createTask(); } if(e.key==='/'){ e.preventDefault(); $('#q').focus(); } if(e.key.toLowerCase()==='d'){ e.preventDefault(); setDark(!state.dark); } if(e.key==='Escape' && $('#modal').classList.contains('open')) closeDialog(); });
 
-    // Conexión con Google
-    $('#btnGoogleSignIn').onclick = handleAuthClick;
+    // ===== Auth UI =====
+    $('#btnLogin').onclick = async()=>{ try{ const res = await signInWithPopup(auth, provider); const user=res.user; await ensureBoard(user); startTasksListener(); $('#btnLogin').style.display='none'; $('#btnLogout').style.display='inline-block'; $('#btnInvite').style.display='inline-block'; $('#userChip').style.display='inline-block'; $('#userChip').textContent = user.displayName || user.email; } catch(err){ console.error(err); alert('No se pudo iniciar sesión'); } };
+    $('#btnLogout').onclick = async()=>{ await signOut(auth); if(unsubTasks) unsubTasks(); state.tasks=[]; render(); $('#btnLogin').style.display='inline-block'; $('#btnLogout').style.display='none'; $('#btnInvite').style.display='none'; $('#userChip').style.display='none'; };
+    $('#btnInvite').onclick = inviteByEmail;
 
-    // Import/Export JSON
-    $('#btnExport').onclick = ()=>{
-      const blob = new Blob([JSON.stringify(state.tasks,null,2)],{type:'application/json'});
-      const a = document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='tasks.json'; a.click(); URL.revokeObjectURL(a.href);
-    };
-    $('#btnImport').onclick = ()=>{
-      const inp = document.createElement('input'); inp.type='file'; inp.accept='application/json';
-      inp.onchange = ()=>{
-        const file = inp.files[0]; if(!file) return;
-        const fr = new FileReader(); fr.onload = ()=>{ try{ const arr = JSON.parse(fr.result); if(Array.isArray(arr)){ state.tasks = arr; save(); render(); } else alert('JSON inválido'); } catch(e){ alert('No se pudo leer el JSON'); } };
-        fr.readAsText(file);
-      };
-      inp.click();
-    };
+    onAuthStateChanged(auth, async(user)=>{ if(user){ await ensureBoard(user); $('#btnLogin').style.display='none'; $('#btnLogout').style.display='inline-block'; $('#btnInvite').style.display='inline-block'; $('#userChip').style.display='inline-block'; $('#userChip').textContent = user.displayName || user.email; startTasksListener(); } else { $('#btnLogin').style.display='inline-block'; $('#btnLogout').style.display='none'; $('#btnInvite').style.display='none'; $('#userChip').style.display='none'; } });
 
-    // Atajos de teclado
-    document.addEventListener('keydown', (e)=>{
-      if(e.key.toLowerCase()==='n' && !e.ctrlKey && !e.metaKey){ e.preventDefault(); createTask(); }
-      if(e.key==='/'){ e.preventDefault(); $('#q').focus(); }
-      if(e.key.toLowerCase()==='d'){ e.preventDefault(); setDark(!state.dark); }
-      if(e.key==='Escape' && $('#modal').classList.contains('open')) closeDialog();
-    });
-    
-    // Iniciar la aplicación
-    load();
-    render();
-    setDark(state.dark);
-
-    // Llama a las funciones de inicialización de Google
-    window.gapiLoaded = gapiLoaded;
-    window.gsiLoaded = gsiLoaded;
-
+    // ===== Init =====
+    setDark(state.dark); render();
   </script>
 </body>
 </html>
