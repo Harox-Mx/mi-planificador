@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Mi Planificador</title>
+</head>
+<body>
+  <h1>Mis Tareas</h1>
+  <input type="text" id="nuevaTarea" placeholder="Escribe tu tarea">
+  <button onclick="agregarTarea()">Agregar</button>
+  <ul id="listaTareas"></ul>
+
+  <script>
+    function agregarTarea() {
+      const texto = document.getElementById("nuevaTarea").value;
+      const li = document.createElement("li");
+      li.textContent = texto;
+      document.getElementById("listaTareas").appendChild(li);
+      document.getElementById("nuevaTarea").value = "";
+    }
+  </script>
+</body>
+</html>
+
