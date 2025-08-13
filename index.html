@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Tablero Kanban</title>
+  <title>Tablero Kanban Mejorado</title>
   <style>
     body {
       font-family: sans-serif;
@@ -34,6 +34,32 @@
       border-radius: 6px;
       cursor: grab;
     }
+    .editable {
+      border: none;
+      background: transparent;
+      font-size: 1em;
+      width: 100%;
+    }
+    .subtasks {
+      margin-top: 8px;
+    }
+    .subtasks label {
+      display: block;
+      font-size: 0.9em;
+    }
+    .meta {
+      font-size: 0.85em;
+      margin-top: 6px;
+      color: #333;
+    }
+    .meta input {
+      width: 100%;
+      border: none;
+      background: #fff;
+      padding: 4px;
+      border-radius: 4px;
+      margin-top: 2px;
+    }
   </style>
 </head>
 <body>
@@ -41,8 +67,28 @@
   <div class="board">
     <div class="column" ondrop="drop(event)" ondragover="allowDrop(event)">
       <h2>Por hacer</h2>
-      <div class="task" draggable="true" ondragstart="drag(event)" id="task1">Diseñar UI</div>
-      <div class="task" draggable="true" ondragstart="drag(event)" id="task2">Definir MVP</div>
+      <div class="task" draggable="true" ondragstart="drag(event)" id="task1">
+        <input class="editable" value="Diseñar UI" />
+        <div class="meta">
+          Prioridad: <input value="Alta" />
+          Responsable: <input value="Victor" />
+        </div>
+        <div class="subtasks">
+          <label><input type="checkbox" /> Wireframes</label>
+          <label><input type="checkbox" /> Paleta de colores</label>
+        </div>
+      </div>
+      <div class="task" draggable="true" ondragstart="drag(event)" id="task2">
+        <input class="editable" value="Definir MVP" />
+        <div class="meta">
+          Prioridad: <input value="Media" />
+          Responsable: <input value="Victor" />
+        </div>
+        <div class="subtasks">
+          <label><input type="checkbox" /> Funciones clave</label>
+          <label><input type="checkbox" /> Alcance técnico</label>
+        </div>
+      </div>
     </div>
     <div class="column" ondrop="drop(event)" ondragover="allowDrop(event)">
       <h2>En progreso</h2>
