@@ -2,87 +2,70 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>🗓️ Planificador Semanal Kanban</title>
+  <title>🧠 Planner tipo Asana</title>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
-      background-color: #f0f2f5;
-      padding: 20px;
-      margin: 0;
+      background-color: #f8f9fa;
+      padding: 40px;
+      max-width: 900px;
+      margin: auto;
     }
     h1 {
       text-align: center;
       margin-bottom: 30px;
       color: #333;
     }
-    .board {
-      display: flex;
-      gap: 20px;
-      justify-content: center;
-      flex-wrap: wrap;
+    .day-section {
+      margin-bottom: 40px;
     }
-    .column {
-      background: #fff;
-      padding: 15px;
-      border-radius: 10px;
-      width: 300px;
-      min-height: 400px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-      transition: box-shadow 0.3s ease;
-    }
-    .column:hover {
-      box-shadow: 0 6px 14px rgba(0,0,0,0.15);
-    }
-    .column h2 {
-      text-align: center;
-      margin-bottom: 15px;
+    .day-section h2 {
       color: #007bff;
+      margin-bottom: 15px;
     }
     .task {
-      background: #ffffff;
-      margin: 12px 0;
-      padding: 12px;
+      background: #fff;
       border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 12px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-      transition: transform 0.2s ease;
-      cursor: grab;
+      transition: box-shadow 0.2s ease;
     }
-    .task:active {
-      transform: scale(1.02);
+    .task:hover {
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
-    .task-content {
+    .task-left {
       flex: 1;
     }
-    .task-content input.editable {
+    .task-left input.title {
       font-size: 1em;
+      font-weight: bold;
       border: none;
       background: transparent;
       width: 100%;
-      font-weight: bold;
-      margin-bottom: 6px;
+      margin-bottom: 8px;
     }
     .subtasks label {
       display: block;
       font-size: 0.9em;
       margin-bottom: 4px;
     }
-    .task-meta {
-      width: 100px;
-      padding-left: 10px;
-      font-size: 0.85em;
+    .task-right {
+      width: 160px;
       display: flex;
       flex-direction: column;
       gap: 6px;
+      font-size: 0.85em;
     }
-    .task-meta input {
-      border: none;
-      background: #f0f0f0;
-      padding: 4px;
+    .task-right input, .task-right select {
+      border: 1px solid #ccc;
       border-radius: 4px;
+      padding: 4px;
       width: 100%;
+      box-sizing: border-box;
     }
     .add-task {
       margin-top: 10px;
@@ -93,7 +76,6 @@
       padding: 6px;
       border-radius: 4px;
       border: 1px solid #ccc;
-      box-sizing: border-box;
     }
     .add-task button {
       width: 100%;
@@ -110,92 +92,65 @@
   </style>
 </head>
 <body>
-  <h1>🗓️ Planificador Semanal Kanban</h1>
-  <div class="board">
-    <!-- Día: Lunes -->
-    <div class="column" ondrop="drop(event)" ondragover="allowDrop(event)">
-      <h2>Lunes</h2>
-      <div id="lunes-tasks"></div>
-      <div class="add-task">
-        <input type="text" placeholder="Título de tarea" id="titulo-lunes">
-        <select id="prioridad-lunes">
-          <option value="Alta">Alta</option>
-          <option value="Media">Media</option>
-          <option value="Baja">Baja</option>
-        </select>
-        <input type="text" placeholder="Responsable" id="responsable-lunes">
-        <button onclick="agregarTarea('lunes')">Agregar tarea</button>
-      </div>
-    </div>
+  <h1>🧠 Planner tipo Asana</h1>
 
-    <!-- Día: Martes -->
-    <div class="column" ondrop="drop(event)" ondragover="allowDrop(event)">
-      <h2>Martes</h2>
-      <div id="martes-tasks"></div>
-      <div class="add-task">
-        <input type="text" placeholder="Título de tarea" id="titulo-martes">
-        <select id="prioridad-martes">
-          <option value="Alta">Alta</option>
-          <option value="Media">Media</option>
-          <option value="Baja">Baja</option>
-        </select>
-        <input type="text" placeholder="Responsable" id="responsable-martes">
-        <button onclick="agregarTarea('martes')">Agregar tarea</button>
-      </div>
+  <div class="day-section" id="lunes">
+    <h2>Lunes</h2>
+    <div id="tasks-lunes"></div>
+    <div class="add-task">
+      <input type="text" placeholder="Título de tarea" id="titulo-lunes">
+      <select id="prioridad-lunes">
+        <option value="Alta">Alta</option>
+        <option value="Media">Media</option>
+        <option value="Baja">Baja</option>
+      </select>
+      <input type="text" placeholder="Responsable" id="responsable-lunes">
+      <input type="date" id="fecha-lunes">
+      <button onclick="agregarTarea('lunes')">Agregar tarea</button>
     </div>
-
-    <!-- Puedes duplicar más días aquí -->
   </div>
 
+  <!-- Puedes duplicar más días aquí -->
+
   <script>
-    function allowDrop(ev) {
-      ev.preventDefault();
-    }
-
-    function drag(ev) {
-      ev.dataTransfer.setData("text", ev.target.id);
-    }
-
-    function drop(ev) {
-      ev.preventDefault();
-      const data = ev.dataTransfer.getData("text");
-      const task = document.getElementById(data);
-      ev.target.closest('.column').querySelector('div[id$="-tasks"]').appendChild(task);
-    }
-
     let contador = 0;
     function agregarTarea(dia) {
       const titulo = document.getElementById(`titulo-${dia}`).value.trim();
       const prioridad = document.getElementById(`prioridad-${dia}`).value;
       const responsable = document.getElementById(`responsable-${dia}`).value.trim();
+      const fecha = document.getElementById(`fecha-${dia}`).value;
       if (!titulo) return;
 
       const taskId = `task-${dia}-${contador++}`;
-      const contenedor = document.getElementById(`${dia}-tasks`);
+      const contenedor = document.getElementById(`tasks-${dia}`);
 
       const task = document.createElement("div");
       task.className = "task";
       task.id = taskId;
-      task.draggable = true;
-      task.ondragstart = drag;
 
       task.innerHTML = `
-        <div class="task-content">
-          <input class="editable" value="${titulo}" />
+        <div class="task-left">
+          <input class="title" value="${titulo}" />
           <div class="subtasks">
             <label><input type="checkbox" /> Subtarea 1</label>
             <label><input type="checkbox" /> Subtarea 2</label>
           </div>
         </div>
-        <div class="task-meta">
-          <input value="${prioridad}" />
-          <input value="${responsable}" />
+        <div class="task-right">
+          <select>
+            <option ${prioridad === 'Alta' ? 'selected' : ''}>Alta</option>
+            <option ${prioridad === 'Media' ? 'selected' : ''}>Media</option>
+            <option ${prioridad === 'Baja' ? 'selected' : ''}>Baja</option>
+          </select>
+          <input value="${responsable}" placeholder="Responsable" />
+          <input type="date" value="${fecha}" />
         </div>
       `;
 
       contenedor.appendChild(task);
       document.getElementById(`titulo-${dia}`).value = "";
       document.getElementById(`responsable-${dia}`).value = "";
+      document.getElementById(`fecha-${dia}`).value = "";
     }
   </script>
 </body>
