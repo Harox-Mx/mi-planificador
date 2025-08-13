@@ -70,8 +70,8 @@
       margin-bottom: 5px;
       border-radius: 4px;
       display: flex;
-      justify-content: space-between;
-      align-items: center;
+      flex-direction: column;
+      gap: 6px;
     }
     .delete-btn {
       background-color: #dc3545;
@@ -80,6 +80,7 @@
       padding: 4px 8px;
       border-radius: 4px;
       cursor: pointer;
+      align-self: flex-end;
     }
     .delete-btn:hover {
       background-color: #c82333;
@@ -101,6 +102,15 @@
     .prioridad.baja {
       background-color: #28a745;
     }
+    .subtareas li {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 4px 0;
+    }
+    .input-subtarea {
+      margin-top: 6px;
+    }
   </style>
 </head>
 <body>
@@ -117,7 +127,7 @@
       <ul id="lista-reuniones-lunes"></ul>
     </div>
 
-    <!-- Tareas -->
+    <!-- Tareas con subtareas -->
     <div class="card">
       <h3>✅ Tareas</h3>
       <input type="text" placeholder="Tarea" id="tarea-lunes">
@@ -126,7 +136,7 @@
         <option value="Media">Media</option>
         <option value="Baja">Baja</option>
       </select>
-      <button onclick="agregarTareaConPrioridad('lunes')">Agregar tarea</button>
+      <button onclick="agregarTareaConSubtareas('lunes')">Agregar tarea</button>
       <ul id="lista-tareas-lunes"></ul>
     </div>
 
@@ -157,23 +167,54 @@
       input.value = "";
     }
 
-    function agregarTareaConPrioridad(dia) {
-      const tarea = document.getElementById(`tarea-${dia}`).value.trim();
+    function agregarTareaConSubtareas(dia) {
+      const tareaTexto = document.getElementById(`tarea-${dia}`).value.trim();
       const prioridad = document.getElementById(`prioridad-${dia}`).value;
       const ul = document.getElementById(`lista-tareas-${dia}`);
-      if (tarea === "") return;
+      if (tareaTexto === "") return;
 
       const li = document.createElement("li");
-      li.innerHTML = `${tarea} <span class="prioridad ${prioridad.toLowerCase()}">${prioridad}</span>`;
+      li.innerHTML = `
+        <div>
+          <strong>${tareaTexto}</strong>
+          <span class="prioridad ${prioridad.toLowerCase()}">${prioridad}</span>
+        </div>
+        <ul class="subtareas"></ul>
+        <input type="text" placeholder="Subtarea..." class="input-subtarea" />
+        <button onclick="agregarSubtarea(this)">+ Subtarea</button>
+      `;
 
-      const btn = document.createElement("button");
-      btn.textContent = "Eliminar";
-      btn.className = "delete-btn";
-      btn.onclick = () => li.remove();
+      const btnEliminar = document.createElement("button");
+      btnEliminar.textContent = "Eliminar";
+      btnEliminar.className = "delete-btn";
+      btnEliminar.onclick = () => li.remove();
+      li.appendChild(btnEliminar);
 
-      li.appendChild(btn);
       ul.appendChild(li);
       document.getElementById(`tarea-${dia}`).value = "";
+    }
+
+    function agregarSubtarea(btn) {
+      const li = btn.closest("li");
+      const input = li.querySelector(".input-subtarea");
+      const subtareaTexto = input.value.trim();
+      if (subtareaTexto === "") return;
+
+      const subtareasUl = li.querySelector(".subtareas");
+      const subtareaLi = document.createElement("li");
+      subtareaLi.innerHTML = `
+        <input type="checkbox" />
+        <span>${subtareaTexto}</span>
+      `;
+
+      const btnEliminar = document.createElement("button");
+      btnEliminar.textContent = "Eliminar";
+      btnEliminar.className = "delete-btn";
+      btnEliminar.onclick = () => subtareaLi.remove();
+      subtareaLi.appendChild(btnEliminar);
+
+      subtareasUl.appendChild(subtareaLi);
+      input.value = "";
     }
   </script>
 </body>
